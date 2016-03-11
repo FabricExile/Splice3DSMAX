@@ -73,8 +73,11 @@ public:
 
 	// General purpose exposure
 	static FabricStaticFPInterface* GetInstance();
+	static void ReleaseInstance();
 
 private:
+
+	static FabricStaticFPInterface* m_instance;
 
 	// Declares the constructor of this class. It is private so a single static instance of this class
 	// may be instantiated.
