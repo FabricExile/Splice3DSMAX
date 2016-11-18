@@ -180,7 +180,7 @@ void FabricTranslationFPInterface::DFGRemovePort(const Tab<TSTR*>& portNames, co
 	InvalidateAll();
 	QStringList cPortNames;
 	Convert( portNames, cPortNames );
-	return m_fabricCmdHandler.dfgDoRemovePort(m_binding, ToQStr(execPath), GetExec(execPath), cportNames);
+	return m_fabricCmdHandler.dfgDoRemovePort(m_binding, ToQStr(execPath), GetExec(execPath), cPortNames);
 	MAXSPLICE_CATCH_END
 }
 void FabricTranslationFPInterface::DFGResizeBackdrop(const MSTR& backDropNodeName, Point2 topLeft, Point2 size, const MSTR& execPath)

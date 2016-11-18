@@ -131,7 +131,7 @@ public:
 		FN_4(fn_dfgAddSet,			TYPE_TSTR_BV,		DFGAddSet,				TYPE_TSTR,		TYPE_TSTR, TYPE_POINT2, TYPE_TSTR);
 		FN_7(fn_dfgAddPort,			TYPE_TSTR_BV,		DFGAddPort,				TYPE_TSTR,		TYPE_ENUM, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR);
 		FN_7(fn_dfgEditPort,		TYPE_TSTR_BV,		DFGEditPort,			TYPE_TSTR,		TYPE_ENUM, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR);
-		VFN_2(fn_dfgRemovePort,							DFGRemovePort,			TYPE_TSTR,		TYPE_TSTR);
+		VFN_2(fn_dfgRemovePort,							DFGRemovePort,			TYPE_TSTR_TAB_BV,		TYPE_TSTR);
 		VFN_4(fn_dfgResizeBackdrop,						DFGResizeBackdrop,		TYPE_TSTR,		TYPE_POINT2, TYPE_POINT2, TYPE_TSTR);
 		VFN_3(fn_dfgMoveNodes,							DFGMoveNodes,			TYPE_TSTR_TAB_BV,	TYPE_POINT2_TAB_BR, TYPE_TSTR);
 		FN_3(fn_dfgImplodeNodes,	TYPE_TSTR_BV,		DFGImplodeNodes,		TYPE_TSTR_TAB_BV,	TYPE_TSTR, TYPE_TSTR);
