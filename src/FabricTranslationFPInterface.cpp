@@ -174,11 +174,13 @@ MSTR FabricTranslationFPInterface::DFGEditPort(const MSTR& portName, int portTyp
 	return  ToMstr(res);
 	MAXSPLICE_CATCH_RETURN(_M("Exception occured"))
 }
-void FabricTranslationFPInterface::DFGRemovePort(const MSTR& portName, const MSTR& execPath)
+void FabricTranslationFPInterface::DFGRemovePort(const Tab<TSTR*>& portNames, const MSTR& execPath)
 {
 	MAXSPLICE_CATCH_BEGIN
 	InvalidateAll();
-	return m_fabricCmdHandler.dfgDoRemovePort(m_binding, ToQStr(execPath), GetExec(execPath), ToQStr(portName));
+	QStringList cPortNames;
+	Convert( portNames, cPortNames );
+	return m_fabricCmdHandler.dfgDoRemovePort(m_binding, ToQStr(execPath), GetExec(execPath), cportNames);
 	MAXSPLICE_CATCH_END
 }
 void FabricTranslationFPInterface::DFGResizeBackdrop(const MSTR& backDropNodeName, Point2 topLeft, Point2 size, const MSTR& execPath)

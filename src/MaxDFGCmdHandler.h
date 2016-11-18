@@ -130,7 +130,7 @@ virtual void dfgDoRemoveNodes(
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
-    QString portName
+    QStringList portNames
     ) override;
 
   virtual void dfgDoResizeBackDrop(

@@ -287,22 +287,19 @@ QString MaxDFGCmdHandler::dfgDoEditPort(FabricCore::DFGBinding const &binding, Q
 	return res;
 }
 
-void MaxDFGCmdHandler::dfgDoRemovePort(FabricCore::DFGBinding const &binding, QString execPath, FabricCore::DFGExec const &exec, QString portName)
+void MaxDFGCmdHandler::dfgDoRemovePort(FabricCore::DFGBinding const &binding, QString execPath, FabricCore::DFGExec const &exec, QStringList portNames)
 {
-	EMIT1(_M("DFGRemovePort"), portName, execPath);
-
+	EMIT1(_M("DFGRemovePort"), portNames, execPath);
 	DFGHoldActions hold(_M("DFG Remove Port"));
-	if (!theHold.RestoreOrRedoing())
-	{
-		int pid = GetPortParamID(exec, portName.toStdString().c_str());
-		if (pid >= 0)
-		{
-			m_pTranslationLayer->SetMaxTypeForArg(ToMstr(portName), -1);
-		}
-	}
-
-	__super::dfgDoRemovePort(binding, execPath, exec, portName);
-
+	//if (!theHold.RestoreOrRedoing())
+	//{
+	//	int pid = GetPortParamID(exec, portName.toStdString().c_str());
+	//	if (pid >= 0)
+	//	{
+	//		m_pTranslationLayer->SetMaxTypeForArg(ToMstr(portName), -1);
+	//	}
+	//}
+	__super::dfgDoRemovePort(binding, execPath, exec, portNames);
 	m_pTranslationLayer->InvalidateAll();
 }
 
