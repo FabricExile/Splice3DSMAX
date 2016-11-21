@@ -291,14 +291,18 @@ void MaxDFGCmdHandler::dfgDoRemovePort(FabricCore::DFGBinding const &binding, QS
 {
 	EMIT1(_M("DFGRemovePort"), portNames, execPath);
 	DFGHoldActions hold(_M("DFG Remove Port"));
-	//if (!theHold.RestoreOrRedoing())
-	//{
-	//	int pid = GetPortParamID(exec, portName.toStdString().c_str());
-	//	if (pid >= 0)
-	//	{
-	//		m_pTranslationLayer->SetMaxTypeForArg(ToMstr(portName), -1);
-	//	}
-	//}
+	if (!theHold.RestoreOrRedoing())
+	{
+		for (QStringList::iterator it = portNames.begin(); it != portNames.end(); ++it) 
+		{
+			QString portName = *it;
+			int pid = GetPortParamID(exec, portName.toStdString().c_str());
+			if (pid >= 0)
+			{
+				m_pTranslationLayer->SetMaxTypeForArg(ToMstr(portName), -1);
+			}			
+		}		
+	}
 	__super::dfgDoRemovePort(binding, execPath, exec, portNames);
 	m_pTranslationLayer->InvalidateAll();
 }
