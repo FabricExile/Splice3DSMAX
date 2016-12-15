@@ -17,6 +17,7 @@ class MaxDFGWidget : public DFG::DFGCombinedWidget {
 	FabricCore::DFGBinding& m_binding;
 
 	ReferenceTarget* m_pOwner;
+
 public:
 	
 	MaxDFGWidget(QWidget * parent, FabricCore::DFGBinding& binding, FabricUI::DFG::DFGUICmdHandler* cmdHandler);
@@ -29,11 +30,11 @@ public:
 	//  We require an owner pointer in order to execute onSelectCanvasNodeInDCC
 	void SetCallbackItem( ReferenceTarget* owner ) { m_pOwner = owner; }
 
-	void keyPressEvent( QKeyEvent * event );
-
 public slots:
 	virtual void onUndo() override;
 	virtual void onRedo() override;
+
+	void triggered();
 
 private slots:
 	void onPortEditDialogCreated(FabricUI::DFG::DFGBaseDialog * dialog);

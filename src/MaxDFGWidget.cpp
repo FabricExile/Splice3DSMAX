@@ -4,6 +4,7 @@
 #include "plugin.h"
 #include <iInstanceMgr.h>
 
+bool CoreEventFilter( void *message, long *result );
 
 MaxDFGWidget::MaxDFGWidget(QWidget * parent, FabricCore::DFGBinding& binding, FabricUI::DFG::DFGUICmdHandler* cmdHandler)
 	: m_binding(binding)
@@ -20,10 +21,47 @@ MaxDFGWidget::MaxDFGWidget(QWidget * parent, FabricCore::DFGBinding& binding, Fa
 		this, SLOT(onPortEditDialogCreated(FabricUI::DFG::DFGBaseDialog*)));
 	QObject::connect(this, SIGNAL(portEditDialogInvoked(FabricUI::DFG::DFGBaseDialog*)),
 		this, SLOT(onPortEditDialogInvoked(FabricUI::DFG::DFGBaseDialog*)));
+
+	
+	QMenuBar* menuBar = findChild<QMenuBar*>();
+	QList<QAction*> allActions = menuBar->findChildren<QAction*>();
+
+	QKeySequence undoSeq = QKeySequence::Undo;
+	QKeySequence redoSeq = QKeySequence::Redo;
+
+	for (int i = 0; i < allActions.size(); i++)
+	{
+		QAction* qAction = allActions[i];
+		QKeySequence shortcut = qAction->shortcut();
+		if (qAction->isEnabled() &&
+			(
+				 shortcut.matches( undoSeq ) == QKeySequence::ExactMatch ||
+			     shortcut.matches( redoSeq ) == QKeySequence::ExactMatch
+			 )
+			 )
+		{
+			//const char* name = qAction->name();
+			QString text = qAction->text();
+			//qAction->setShortcutContext( Qt::ApplicationShortcut );
+			addAction( qAction );
+		}
+	}
+
+	qApp->setEventFilter( &CoreEventFilter );
+
+	// Initialize focus to this window
+	activateWindow();
+	setFocus( Qt::ActiveWindowFocusReason );
+}
+
+void MaxDFGWidget::triggered()
+{
+	DebugPrint( _M( "Yes, Triggered" ) );
 }
 
 MaxDFGWidget::~MaxDFGWidget()
 {
+	qApp->setEventFilter( nullptr );
 }
 
 //
@@ -308,20 +346,28 @@ void MaxDFGWidget::onPortEditDialogInvoked(FabricUI::DFG::DFGBaseDialog * dialog
 	}
 }
 
-void MaxDFGWidget::keyPressEvent( QKeyEvent * event )
+//////////////////////////////////////////////////////////////////////////
+// This section contains the additional hackery required to 
+// ensure that our version of Qt plays nicely with Max
+
+bool CoreEventFilter( void *message, long *result )
 {
-	if (event->matches( QKeySequence::Undo ))
+	MSG* eventMsg = reinterpret_cast<MSG*>(message);
+	if (eventMsg->message == WM_ACTIVATEAPP && eventMsg->wParam == 0)
 	{
-		onUndo();
-		event->accept();
+		// For reasons unknown, we are recieving messages to shift focus away
+		// from Max when recieving keystrokes.  Its possible that the embedded
+		// Qt window
+		return true;
 	}
-	else if (event->matches( QKeySequence::Redo ))
+
+	if (eventMsg->message == WM_KEYDOWN)
 	{
-		onRedo();
-		event->accept();
+		QWidget* pWidget = qApp->focusWidget();
+		if (pWidget != nullptr && qApp->activeWindow() == nullptr)
+		{
+			qApp->setActiveWindow( pWidget );
+		}
 	}
-	else
-	{
-		return __super::keyPressEvent( event );
-	}
+	return false;
 }
