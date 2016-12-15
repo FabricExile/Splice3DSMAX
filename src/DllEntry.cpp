@@ -161,6 +161,8 @@ __declspec( dllexport ) int LibShutdown(void)
 	//Fabric::Logging::setKLReportFunc(nullptr);
 	//Fabric::Logging::setKLStatusFunc(nullptr);
 
+	FabricStaticFPInterface::ReleaseInstance();
+
 	//Fabric::Finalize();
 	return TRUE;
 }

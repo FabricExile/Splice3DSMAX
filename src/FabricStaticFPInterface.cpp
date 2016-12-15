@@ -11,56 +11,69 @@
 
 using namespace std;
 
+FabricStaticFPInterface* FabricStaticFPInterface::m_instance = NULL;
+
+//////////////////////////////////////////////////////////////////////////
+
 FabricStaticFPInterface* FabricStaticFPInterface::GetInstance()
 {
-	// The single instance of this class
-	// Initialize our instance.  This part is tells Max about the
-	// functions exposed in our function map.
-	static FabricStaticFPInterface _theInstance(
-		// Describe our interface
-		IFabric_STATIC_INTERFACE , _T("Fabric"), 0, NULL, FP_CORE,
-		// Describe our function(s)
-			FabricStaticFPInterface::fn_importFabricFile, _T("LoadFromFile"), 0, TYPE_BOOL, 0, 1,
-				_M("file"),	0,	TYPE_TSTR,
+
+	if (m_instance == NULL)
+	{
+		// The single instance of this class
+		// Initialize our instance.  This part is tells Max about the
+		// functions exposed in our function map.
+		m_instance = new FabricStaticFPInterface(
+			// Describe our interface
+			IFabric_STATIC_INTERFACE , _T("Fabric"), 0, NULL, FP_CORE,
+			// Describe our function(s)
+				FabricStaticFPInterface::fn_importFabricFile, _T("LoadFromFile"), 0, TYPE_BOOL, 0, 1,
+					_M("file"),	0,	TYPE_TSTR,
 			
-			FabricStaticFPInterface::fn_loadFabricExtension, _T("LoadExtension"), 0, TYPE_BOOL, 0, 3,
-				_M("extension"),	0,	TYPE_TSTR,
-				_M("version"),	0,	TYPE_TSTR, f_keyArgDefault, EmptyStr(),
-				_M("reload"),	0,	TYPE_bool, f_keyArgDefault, false,
-			FabricStaticFPInterface::fn_registerFabricExtension, _T("RegisterExtension"), 0, TYPE_BOOL, 0, 7,
-				_M("extension"),	0,	TYPE_TSTR,
-				_M("version"),	0,	TYPE_TSTR,
-				_M("versionOverride"),	0,	TYPE_TSTR,
-				_M("files"), 0, TYPE_TSTR_TAB_BV,
-				_M("fileContents"), 0, TYPE_TSTR_TAB_BV, f_keyArgDefault, Tab<MSTR*>(),
-				_M("load"),	0,	TYPE_bool,
-				_M("reload"),	0,	TYPE_bool, f_keyArgDefault, false,
+				FabricStaticFPInterface::fn_loadFabricExtension, _T("LoadExtension"), 0, TYPE_BOOL, 0, 3,
+					_M("extension"),	0,	TYPE_TSTR,
+					_M("version"),	0,	TYPE_TSTR, f_keyArgDefault, EmptyStr(),
+					_M("reload"),	0,	TYPE_bool, f_keyArgDefault, false,
+				FabricStaticFPInterface::fn_registerFabricExtension, _T("RegisterExtension"), 0, TYPE_BOOL, 0, 7,
+					_M("extension"),	0,	TYPE_TSTR,
+					_M("version"),	0,	TYPE_TSTR,
+					_M("versionOverride"),	0,	TYPE_TSTR,
+					_M("files"), 0, TYPE_TSTR_TAB_BV,
+					_M("fileContents"), 0, TYPE_TSTR_TAB_BV, f_keyArgDefault, Tab<MSTR*>(),
+					_M("load"),	0,	TYPE_bool,
+					_M("reload"),	0,	TYPE_bool, f_keyArgDefault, false,
 
-			FabricStaticFPInterface::fn_setReportLevelMax, _T("SetReportLevelMax"), 0, TYPE_BOOL, 0, 1,
-				_M("level"),	0,	TYPE_ENUM, FabricStaticFPInterface::reportEnums,
+				FabricStaticFPInterface::fn_setReportLevelMax, _T("SetReportLevelMax"), 0, TYPE_BOOL, 0, 1,
+					_M("level"),	0,	TYPE_ENUM, FabricStaticFPInterface::reportEnums,
 
-			FabricStaticFPInterface::fn_destroyClient, _T("DestroyClient"), 0, TYPE_INT, 0, 1,
-				_M("force"),	0,	TYPE_BOOL, f_keyArgDefault, false,
+				FabricStaticFPInterface::fn_destroyClient, _T("DestroyClient"), 0, TYPE_INT, 0, 1,
+					_M("force"),	0,	TYPE_BOOL, f_keyArgDefault, false,
 
 
-		properties,
-			FabricStaticFPInterface::prop_getFabricRendering,FabricStaticFPInterface::prop_setFabricRendering, _T("Rendering"), 0,TYPE_bool,
-			FabricStaticFPInterface::prop_getFabricManip,FabricStaticFPInterface::prop_setFabricManip, _T("Manipulation"), 0,TYPE_bool,
-			FabricStaticFPInterface::prop_getContextId, FabricStaticFPInterface::prop_setContextId, _T("ContextId"), 0, TYPE_TSTR_BV,
+			properties,
+				FabricStaticFPInterface::prop_getFabricRendering,FabricStaticFPInterface::prop_setFabricRendering, _T("Rendering"), 0,TYPE_bool,
+				FabricStaticFPInterface::prop_getFabricManip,FabricStaticFPInterface::prop_setFabricManip, _T("Manipulation"), 0,TYPE_bool,
+				FabricStaticFPInterface::prop_getContextId, FabricStaticFPInterface::prop_setContextId, _T("ContextId"), 0, TYPE_TSTR_BV,
 
-		enums,
-			FabricStaticFPInterface::reportEnums, 4,
-				_T("Error"),	FabricCore::ReportLevel_Error,
-				_T("Warning"),	FabricCore::ReportLevel_Warning,
-				_T("Info"),		FabricCore::ReportLevel_Info,
-				_T("Debug"),	FabricCore::ReportLevel_Debug,
-		p_end
-		);
-	return &_theInstance;
+			enums,
+				FabricStaticFPInterface::reportEnums, 4,
+					_T("Error"),	FabricCore::ReportLevel_Error,
+					_T("Warning"),	FabricCore::ReportLevel_Warning,
+					_T("Info"),		FabricCore::ReportLevel_Info,
+					_T("Debug"),	FabricCore::ReportLevel_Debug,
+			p_end
+			);
+	}
+	return m_instance;
 }
 
 
-BOOL FabricStaticFPInterface::ImportFabricFile(const TSTR& file)
+void FabricStaticFPInterface::ReleaseInstance()
+{
+	SAFE_DELETE( m_instance );
+}
+
+BOOL FabricStaticFPInterface::ImportFabricFile( const TSTR& file )
 {
 	ClassDesc2* pCD = FabricTranslationLayer<GeomObject, Mesh>::GetClassDesc();
 	BOOL res = FALSE;
