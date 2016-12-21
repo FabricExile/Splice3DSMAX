@@ -28,7 +28,9 @@ BOOL FabricTranslationFPInterface::ShowDFGGraphEditor()
 {
 	CloseDFGGraphEditor();
 
-	m_pDFGWidgetWindow = DockableWindow::Create(_T("Fabric Engine - Canvas"), this);
+	MSTR dlgName;
+	dlgName.printf( _M("Fabric Engine - %s"), GetNodeName() );
+	m_pDFGWidgetWindow = DockableWindow::Create( dlgName.data(), this);
 	HWND h = m_pDFGWidgetWindow->GetHWND();
 	QWinWidget* dlg = new QWinWidget(h);
 	MaxDFGWidget* pWidget = new MaxDFGWidget(dlg, GetBinding(), &m_fabricCmdHandler);
@@ -448,6 +450,17 @@ MSTR FabricTranslationFPInterface::GetNodeName(int i, const MSTR& execPath)
 	MAXSPLICE_CATCH_BEGIN
 	return ToMstr(GetExec(execPath).getNodeName(i));
 	MAXSPLICE_CATCH_RETURN(_M(" ** Exception Occured"));
+}
+
+
+const MCHAR* FabricTranslationFPInterface::GetNodeName()
+{
+	INode* node = GetCOREInterface7()->FindNodeFromBaseObject( CastToRefTarg() );
+	if (node) 
+	{
+		return node->GetName();
+	}
+	return _M("");
 }
 
 int FabricTranslationFPInterface::GetNodeType(const MSTR& NodeName, const MSTR& execPath)

@@ -8,10 +8,10 @@ class QWidget;
 class DockableWindow
 	: public CUIPosData, public CUIFrameMsgHandler
 {
-	HWND h;
-	ICUIFrame* frame;
-	QWidget* w;
-	CUIPosData posData;
+	MSTR m_name;
+	HWND m_hWnd;
+	ICUIFrame* m_cuiFrame;
+	QWidget* m_contentWidget;
 	FabricTranslationFPInterface* m_owner;
 
 	DockableWindow(HWND hwndCuiFrame, FabricTranslationFPInterface* owner);
@@ -39,7 +39,7 @@ public:
 
 	virtual ~DockableWindow();
 
-	static DockableWindow* Create(MCHAR* name, 
+	static DockableWindow* Create(const MCHAR* name, 
 								   FabricTranslationFPInterface* owner, 
 								   DockFlags pos = None,
 								   DWORD initialPos = 0,

@@ -317,6 +317,8 @@ public:
 
 	virtual MSTR GetGraphName();
 
+	const MCHAR* GetNodeName();
+
 	// Reset any auto-generated ports.
 	virtual void ResetPorts()=0;
 

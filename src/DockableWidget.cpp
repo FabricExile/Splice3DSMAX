@@ -7,14 +7,14 @@
 //////////////////////////////////////////////////////////////////////////
 
 DockableWindow::DockableWindow(HWND hwndCuiFrame, FabricTranslationFPInterface* owner)
- : h(hwndCuiFrame)
- , w(NULL)
- , frame(NULL)
+ : m_hWnd(hwndCuiFrame)
+ , m_contentWidget(NULL)
+ , m_cuiFrame(NULL)
  , m_owner(owner)
 {
-	frame = ::GetICUIFrame(h);
-	frame->SetContentType(CUI_HWND);
-	frame->InstallMsgHandler(this);
+	m_cuiFrame = ::GetICUIFrame(m_hWnd);
+	m_cuiFrame->SetContentType(CUI_HWND);
+	m_cuiFrame->InstallMsgHandler(this);
 
 	// Ensure our QtApp is initialized
 	AcquireQt();
@@ -22,11 +22,14 @@ DockableWindow::DockableWindow(HWND hwndCuiFrame, FabricTranslationFPInterface* 
 
 DockableWindow::~DockableWindow()
 {
-	::ReleaseICUIFrame(frame);
+	const MCHAR* name = m_cuiFrame->GetName();
+	m_cuiFrame->WriteConfig( name );
 
-	delete w;
+	::ReleaseICUIFrame(m_cuiFrame);
 
-	DestroyWindow(h);
+	delete m_contentWidget;
+
+	DestroyWindow(m_hWnd);
 
 	// #FABMAX-50 - Only release Qt on plugin release,
 	// Doing so frequently will cause Qt to re-initialize itself
@@ -38,23 +41,23 @@ DockableWindow::~DockableWindow()
 void DockableWindow::ResizeFrameToContent()
 {
 	RECT r = { 0 };
-	if (w == NULL) return;
-	GetWindowRect(h, &r);
-	MoveWindow(h, r.left, r.top, w->width(), w->height(), TRUE);
+	if (m_contentWidget == NULL) return;
+	GetWindowRect(m_hWnd, &r);
+	MoveWindow(m_hWnd, r.left, r.top, m_contentWidget->width(), m_contentWidget->height(), TRUE);
 }
 
 void DockableWindow::ResizeContentToFrame()
 {
-	if (w == NULL) return;
+	if (m_contentWidget == NULL) return;
 	RECT r = { 0 };
-	GetWindowRect(h, &r);
+	GetWindowRect(m_hWnd, &r);
 	int width = r.right - r.left;
 	int height = r.bottom - r.top;
-	w->resize(width, height);
+	m_contentWidget->resize(width, height);
 
 	// Our QWinWidget does not appear to be handling resizing its children - lets
 	// manually pass-through the resize until we have a more elegant method
-	QObjectList contentChildren = w->children();
+	QObjectList contentChildren = m_contentWidget->children();
 	DbgAssert(contentChildren.size() == 1);
 	if (contentChildren.size() > 0)
 	{
@@ -75,7 +78,7 @@ int DockableWindow::GetWidth(int sizeType, int orient)
 	case CUI_MIN_SIZE: return 50;
 	case CUI_MAX_SIZE: return 10000;
 	}
-	return w->width();
+	return m_contentWidget->width();
 }
 
 int DockableWindow::GetHeight(int sizeType, int orient)
@@ -84,20 +87,30 @@ int DockableWindow::GetHeight(int sizeType, int orient)
 	case CUI_MIN_SIZE: return 50;
 	case CUI_MAX_SIZE: return 10000;
 	}
-	return w->height();
+	return m_contentWidget->height();
 }
 
-DockableWindow* DockableWindow::Create(MCHAR* name, FabricTranslationFPInterface* owner, DockFlags pos /*= All*/, DWORD initialPos /*= 0*/, bool isDockedInitially /*= false*/, bool resizable /*= true*/, bool visible /*= true*/)
+DockableWindow* DockableWindow::Create(const MCHAR* name, FabricTranslationFPInterface* owner, DockFlags pos /*= None*/, DWORD initialPos /*= 0*/, bool isDockedInitially /*= false*/, bool resizable /*= true*/, bool visible /*= true*/)
 {
 	HWND h = ::CreateCUIFrameWindow(
 		::GetCOREInterface()->GetMAXHWnd(), name, 0, 0, 0, 0);
-	if (!h) return NULL;
+	if (!h) 
+		return NULL;
+
+	const MCHAR* dir = GetCUIFrameMgr()->GetCUIDirectory();
+	const MCHAR* fname = GetCUIFrameMgr()->GetConfigFile();
+
+	//GetCUIFrameMgr()->SetConfigFile(""
 	DockableWindow* r = new DockableWindow(h, owner);
 	ICUIFrame* f = r->GetICUIFrame();
+	//if (f->)
 	DWORD flags = pos | CUI_FLOATABLE;
-	if (resizable) flags |= CUI_SM_HANDLES;
+	if (resizable) 
+		flags |= CUI_SM_HANDLES;
 	f->SetPosType(flags);
-	if (isDockedInitially) r->Dock(initialPos);
+	if (isDockedInitially) 
+		r->Dock(initialPos);
+	//f->ReadConfig( name );
 	f->Hide(visible ? FALSE : TRUE);
 	return r;
 }
@@ -146,13 +159,13 @@ bool DockableWindow::HasWidget()
 
 QWidget* DockableWindow::GetWidget()
 {
-	return w;
+	return m_contentWidget;
 }
 
 void DockableWindow::SetWidget(QWidget* widget)
 {
-	delete(this->w);
-	this->w = widget;
+	delete(this->m_contentWidget);
+	this->m_contentWidget = widget;
 	if (widget == NULL) return;
 	widget->move(0, 0);
 	ResizeFrameToContent();
@@ -164,25 +177,25 @@ void DockableWindow::SetWidget(QWidget* widget)
 
 void DockableWindow::Dock(DWORD location)
 {
-	if (location & Top) GetCUIFrameMgr()->DockCUIWindow(h, Top);
-	else if (location & Bottom) GetCUIFrameMgr()->DockCUIWindow(h, Bottom);
-	else if (location & Left) GetCUIFrameMgr()->DockCUIWindow(h, Left);
-	else if (location & Right) GetCUIFrameMgr()->DockCUIWindow(h, Right);
+	if (location & Top) GetCUIFrameMgr()->DockCUIWindow(m_hWnd, Top);
+	else if (location & Bottom) GetCUIFrameMgr()->DockCUIWindow(m_hWnd, Bottom);
+	else if (location & Left) GetCUIFrameMgr()->DockCUIWindow(m_hWnd, Left);
+	else if (location & Right) GetCUIFrameMgr()->DockCUIWindow(m_hWnd, Right);
 }
 
 void DockableWindow::Float()
 {
-	GetCUIFrameMgr()->FloatCUIWindow(h);
+	GetCUIFrameMgr()->FloatCUIWindow(m_hWnd);
 }
 
 HWND DockableWindow::GetHWND()
 {
-	return h;
+	return m_hWnd;
 }
 
 ICUIFrame* DockableWindow::GetICUIFrame()
 {
-	return frame;
+	return m_cuiFrame;
 }
 
 //////////////////////////////////////////////////////////////////////////
