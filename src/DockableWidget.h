@@ -8,21 +8,22 @@ class QWidget;
 class DockableWindow
 	: public CUIPosData, public CUIFrameMsgHandler
 {
-	HWND h;
-	ICUIFrame* frame;
-	QWidget* w;
-	CUIPosData posData;
+	MSTR m_name;
+	HWND m_hWnd;
+	ICUIFrame* m_cuiFrame;
+	QWidget* m_contentWidget;
 	FabricTranslationFPInterface* m_owner;
 
-	DockableWindow(HWND hwndCuiFrame, FabricTranslationFPInterface* owner);
+	DockableWindow(HWND hWnd, FabricTranslationFPInterface* owner);
 
 	void ResizeFrameToContent();
 
 	void ResizeContentToFrame();
+	void ResizeContentToFrame( RECT* pNewSize );
 
-	virtual int GetWidth(int sizeType, int orient);
+	int GetWidth( int sizeType, int orient ) override;
 
-	virtual int GetHeight(int sizeType, int orient);
+	int GetHeight(int sizeType, int orient) override;
 
 public:
 
@@ -39,7 +40,7 @@ public:
 
 	virtual ~DockableWindow();
 
-	static DockableWindow* Create(MCHAR* name, 
+	static DockableWindow* Create(const MCHAR* name, 
 								   FabricTranslationFPInterface* owner, 
 								   DockFlags pos = None,
 								   DWORD initialPos = 0,
@@ -62,6 +63,10 @@ public:
 	HWND GetHWND();
 
 	ICUIFrame* GetICUIFrame();
+	
+	// The owning class persists the dlg position
+	void SetDlgPosition( RECT& position );
+	RECT GetDlgPosition();
 };
 
 extern void AcquireQt();

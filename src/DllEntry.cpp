@@ -100,17 +100,16 @@ void OnStartup(void* /*param*/, NotifyInfo* /*info*/)
 		menus_setup = TRUE;
 
 		// On first run, evaluate the script that defines our function
-		char* mxsMenuSetup = nullptr;
-		size_t buffSize = 0;
-		if (_dupenv_s(&mxsMenuSetup, &buffSize, "FABRIC3DSMAXDIR") == 0) {
-			MSTR mxsMenuSetupPath = MSTR::FromACP(mxsMenuSetup, buffSize);
-			mxsMenuSetupPath = mxsMenuSetupPath + _T("SetupMenu.ms");
-			filein_script(mxsMenuSetupPath.data());
-			free(mxsMenuSetup);
+		const MSTR& mxsMenuSetup = GetFabricMaxEnvDir( );
+		bool success = false;
+		if (!mxsMenuSetup.isNull()) {
+			MSTR mxsMenuSetupPath = mxsMenuSetup + _T("SetupMenu.ms");
+			success = filein_script_ex(mxsMenuSetupPath.data(), _M("** Error loading Fabric menu: env variable FABRIC3DSMAXDIR not set **") );
 		}
-		else
+		
+		if (!success)
 		{
-			logMessage("** Error loading Fabric menu: env variable FABRIC3DSMAXDIR not set **");
+			logMessage( "** Error loading Fabric menu: env variable FABRIC3DSMAXDIR not set **" );
 		}
 	}
 
@@ -127,6 +126,7 @@ void OnShutdown(void* param, NotifyInfo* info)
 	// Cleanup once callback is done.
 
 	ReleaseQt();
+	Free3dsMaxEnvDir();
 }
 
 __declspec( dllexport ) int LibInitialize(void)
