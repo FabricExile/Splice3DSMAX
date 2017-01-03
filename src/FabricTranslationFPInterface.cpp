@@ -38,6 +38,10 @@ BOOL FabricTranslationFPInterface::ShowDFGGraphEditor()
 	pWidget->SetCallbackItem( CastToRefTarg() );
 
 	m_pDFGWidgetWindow->SetWidget(dlg);
+
+	// We read settings after the widget is set, otherwise
+	// it can override the settings loaded here.
+	m_pDFGWidgetWindow->ReadSettings();
 	return TRUE;
 }
 

@@ -6,13 +6,13 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-DockableWindow::DockableWindow(HWND hwndCuiFrame, FabricTranslationFPInterface* owner)
- : m_hWnd(hwndCuiFrame)
+DockableWindow::DockableWindow(HWND hWnd, FabricTranslationFPInterface* owner) 
+ : m_hWnd(hWnd)
  , m_contentWidget(NULL)
  , m_cuiFrame(NULL)
  , m_owner(owner)
 {
-	m_cuiFrame = ::GetICUIFrame(m_hWnd);
+	m_cuiFrame = ::GetICUIFrame( m_hWnd );
 	m_cuiFrame->SetContentType(CUI_HWND);
 	m_cuiFrame->InstallMsgHandler(this);
 
@@ -22,8 +22,7 @@ DockableWindow::DockableWindow(HWND hwndCuiFrame, FabricTranslationFPInterface* 
 
 DockableWindow::~DockableWindow()
 {
-	const MCHAR* name = m_cuiFrame->GetName();
-	m_cuiFrame->WriteConfig( name );
+	WriteSettings();
 
 	::ReleaseICUIFrame(m_cuiFrame);
 
@@ -43,16 +42,23 @@ void DockableWindow::ResizeFrameToContent()
 	RECT r = { 0 };
 	if (m_contentWidget == NULL) return;
 	GetWindowRect(m_hWnd, &r);
-	MoveWindow(m_hWnd, r.left, r.top, m_contentWidget->width(), m_contentWidget->height(), TRUE);
+	MoveWindow(m_hWnd, r.left, r.top, m_contentWidget->width(), m_contentWidget->height(), FALSE);
 }
 
 void DockableWindow::ResizeContentToFrame()
 {
-	if (m_contentWidget == NULL) return;
 	RECT r = { 0 };
-	GetWindowRect(m_hWnd, &r);
-	int width = r.right - r.left;
-	int height = r.bottom - r.top;
+	GetWindowRect( m_hWnd, &r );
+	ResizeContentToFrame( &r );
+}
+
+void DockableWindow::ResizeContentToFrame(RECT* pNewSize)
+{
+	if (m_contentWidget == NULL)
+		return;
+
+	int width = pNewSize->right - pNewSize->left;
+	int height = pNewSize->bottom - pNewSize->top;
 	m_contentWidget->resize(width, height);
 
 	// Our QWinWidget does not appear to be handling resizing its children - lets
@@ -69,7 +75,6 @@ void DockableWindow::ResizeContentToFrame()
 			pChildWidget->resize(width - 16, height - 40);
 		}
 	}
-	
 }
 
 int DockableWindow::GetWidth(int sizeType, int orient)
@@ -97,20 +102,16 @@ DockableWindow* DockableWindow::Create(const MCHAR* name, FabricTranslationFPInt
 	if (!h) 
 		return NULL;
 
-	const MCHAR* dir = GetCUIFrameMgr()->GetCUIDirectory();
-	const MCHAR* fname = GetCUIFrameMgr()->GetConfigFile();
-
-	//GetCUIFrameMgr()->SetConfigFile(""
 	DockableWindow* r = new DockableWindow(h, owner);
 	ICUIFrame* f = r->GetICUIFrame();
-	//if (f->)
-	DWORD flags = pos | CUI_FLOATABLE;
+
+	DWORD flags = pos | CUI_FLOATABLE | CUI_DONT_SAVE;
 	if (resizable) 
 		flags |= CUI_SM_HANDLES;
 	f->SetPosType(flags);
 	if (isDockedInitially) 
 		r->Dock(initialPos);
-	//f->ReadConfig( name );
+
 	f->Hide(visible ? FALSE : TRUE);
 	return r;
 }
@@ -129,7 +130,7 @@ int DockableWindow::ProcessMessage( UINT message, WPARAM wParam, LPARAM lParam )
 		m_owner->CloseDFGGraphEditor();
 		break;
 	case WM_SETFOCUS:
-		// When we gain focus, start owning that keyboard shit!
+		// When we gain focus, start owning that keyboard input!
 		DisableAccelerators();
 		break;
 	case CUI_POSDATA_MSG: {
@@ -142,9 +143,11 @@ int DockableWindow::ProcessMessage( UINT message, WPARAM wParam, LPARAM lParam )
 		// we assume (yes, risky) that we have focus and will be accepting keys
 		DisableAccelerators();
 		break;
-	case WM_SIZING:
+	case WM_SIZE:
+	{
 		ResizeContentToFrame();
 		return FALSE;
+	}
 	case WM_KEYDOWN:
 	case WM_KEYUP:
 		return TRUE;
@@ -196,6 +199,49 @@ HWND DockableWindow::GetHWND()
 ICUIFrame* DockableWindow::GetICUIFrame()
 {
 	return m_cuiFrame;
+}
+
+MSTR GetCfgFile()
+{
+	const MSTR& fabricMaxDir = GetFabricMaxEnvDir();
+	return fabricMaxDir + _M( "windowPos.ini" );
+}
+
+void DockableWindow::ReadSettings()
+{
+	MSTR cfgFile = GetCfgFile();
+	QSettings settings( ToQStr( cfgFile ), QSettings::IniFormat );
+
+	RECT rect;
+	GetWindowRect( m_hWnd, &rect );
+
+	const MCHAR* name = m_cuiFrame->GetName();
+	settings.beginGroup( ToQStr( name ) );
+	rect.top = settings.value( "top", rect.top ).toUInt();
+	rect.right = settings.value( "right", rect.right ).toUInt();
+	rect.left = settings.value( "left", rect.left ).toUInt();
+	rect.bottom = settings.value( "bottom", rect.bottom ).toUInt();
+
+	MoveWindow( m_hWnd, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, false );
+
+	ResizeContentToFrame();
+}
+
+void DockableWindow::WriteSettings()
+{
+	RECT rect;
+	GetWindowRect( m_hWnd, &rect );
+
+	MSTR cfgFile = GetCfgFile( );
+	QSettings settings( ToQStr(cfgFile), QSettings::IniFormat );
+
+	const MCHAR* name = m_cuiFrame->GetName();
+	settings.beginGroup( ToQStr(name) );
+	settings.setValue( "top", rect.top );
+	settings.setValue( "right", rect.right );
+	settings.setValue( "left", rect.left );
+	settings.setValue( "bottom", rect.bottom );
+	settings.endGroup();
 }
 
 //////////////////////////////////////////////////////////////////////////

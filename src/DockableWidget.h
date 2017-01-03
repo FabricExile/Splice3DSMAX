@@ -14,15 +14,16 @@ class DockableWindow
 	QWidget* m_contentWidget;
 	FabricTranslationFPInterface* m_owner;
 
-	DockableWindow(HWND hwndCuiFrame, FabricTranslationFPInterface* owner);
+	DockableWindow(HWND hWnd, FabricTranslationFPInterface* owner);
 
 	void ResizeFrameToContent();
 
 	void ResizeContentToFrame();
+	void ResizeContentToFrame( RECT* pNewSize );
 
-	virtual int GetWidth(int sizeType, int orient);
+	int GetWidth( int sizeType, int orient ) override;
 
-	virtual int GetHeight(int sizeType, int orient);
+	int GetHeight(int sizeType, int orient) override;
 
 public:
 
@@ -62,6 +63,9 @@ public:
 	HWND GetHWND();
 
 	ICUIFrame* GetICUIFrame();
+	void ReadSettings();
+private:
+	void WriteSettings();
 };
 
 extern void AcquireQt();

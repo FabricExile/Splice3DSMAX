@@ -70,4 +70,5 @@ extern MSTR ToMstr( const char* str );
 extern CStr ToCStr( const MSTR& ms );
 extern QString ToQStr( const MSTR& ms );
 
-
+extern const MSTR& GetFabricMaxEnvDir();
+extern void Free3dsMaxEnvDir();
