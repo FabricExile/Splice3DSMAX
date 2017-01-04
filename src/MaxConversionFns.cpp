@@ -516,16 +516,16 @@ void ConvertToRTVal(const MCHAR* param, FabricCore::RTVal& val)
 	val.setString( cStr.data(), cStr.Length() );
 }
 
-void ConvertToRTVal(const Mesh& param, FabricCore::RTVal& rtMesh)
+void ConvertToRTVal( const Mesh& param, FabricCore::RTVal& rtMesh )
 {
-	DbgAssert(rtMesh.isValid());
+	DbgAssert( rtMesh.isValid() );
 	if (!rtMesh.isValid() || rtMesh.isNullObject())
-		rtMesh = FabricCore::RTVal::Create(GetClient(), "PolygonMesh", 0, nullptr);
-	
-	UINT nbPolygons = rtMesh.callMethod("UInt32", "polygonCount", 0, 0).getUInt32();
+		rtMesh = FabricCore::RTVal::Create( GetClient(), "PolygonMesh", 0, nullptr );
+
+	UINT nbPolygons = rtMesh.callMethod( "UInt32", "polygonCount", 0, 0 ).getUInt32();
 	bool rebuildMesh = nbPolygons != (UINT)param.numFaces;
-	if(rebuildMesh){
-		rtMesh.callMethod("", "clear", 0, 0);
+	if (rebuildMesh) {
+		rtMesh.callMethod( "", "clear", 0, 0 );
 	}
 
 	FabricCore::Client client = GetClient();
@@ -533,32 +533,32 @@ void ConvertToRTVal(const Mesh& param, FabricCore::RTVal& rtMesh)
 	// Send all vertices to Fabric
 	{
 		FabricCore::RTVal args[2];
-		args[0] = FabricCore::RTVal::ConstructExternalArray(client, "Float32", param.numVerts * 3, param.verts);
-		args[1] = FabricCore::RTVal::ConstructUInt32(client, 3); // components
-		rtMesh.callMethod("", "setPointsFromExternalArray", 2, args);
+		args[0] = FabricCore::RTVal::ConstructExternalArray( client, "Float32", param.numVerts * 3, param.verts );
+		args[1] = FabricCore::RTVal::ConstructUInt32( client, 3 ); // components
+		rtMesh.callMethod( "", "setPointsFromExternalArray", 2, args );
 	}
 
-	if(rebuildMesh){
+	if (rebuildMesh) {
 		// Send all indices to Fabric
 		// First, construct an array of polygon sizes
 		// We only support triangles, so all sizes are 3
 		std::vector<unsigned int> dPolyCounts;
-		dPolyCounts.assign(param.numFaces, 3);
+		dPolyCounts.assign( param.numFaces, 3 );
 
 		// Construct array of indices
 		std::vector<unsigned int> dVertIndex;
-		dPolyCounts.reserve(param.numFaces * 3);
+		dPolyCounts.reserve( param.numFaces * 3 );
 		Face* pFaces = param.faces;
 		for (int f = 0; f < param.numFaces; f++)
 		{
 			for (int i = 0; i < 3; i++)
-				dVertIndex.push_back(pFaces[f].getVert(i));
+				dVertIndex.push_back( pFaces[f].getVert( i ) );
 		}
-	
+
 		FabricCore::RTVal args[2];
-		args[0] = FabricCore::RTVal::ConstructExternalArray(client, "UInt32", dPolyCounts.size(), &dPolyCounts[0]);
-		args[1] = FabricCore::RTVal::ConstructExternalArray(client, "UInt32", dVertIndex.size(), &dVertIndex[0]);
-		rtMesh.callMethod("", "setTopologyFromCountsIndicesExternalArrays", 2, args);
+		args[0] = FabricCore::RTVal::ConstructExternalArray( client, "UInt32", dPolyCounts.size(), &dPolyCounts[0] );
+		args[1] = FabricCore::RTVal::ConstructExternalArray( client, "UInt32", dVertIndex.size(), &dVertIndex[0] );
+		rtMesh.callMethod( "", "setTopologyFromCountsIndicesExternalArrays", 2, args );
 	}
 
 	// Set normals
@@ -568,55 +568,68 @@ void ConvertToRTVal(const Mesh& param, FabricCore::RTVal& rtMesh)
 	if (pNormalSpec != NULL && pNormalSpec->GetNumNormals() > 0)
 	{
 		// 1 normal per index
-	  MeshNormalFace* pFaces = pNormalSpec->GetFaceArray();
-    Point3* pNormalData = pNormalSpec->GetNormalArray();
-    int nFaces = pNormalSpec->GetNumFaces();
+		MeshNormalFace* pFaces = pNormalSpec->GetFaceArray();
+		Point3* pNormalData = pNormalSpec->GetNormalArray();
+		int nFaces = pNormalSpec->GetNumFaces();
 
-    // We set normals 1-per-poly-point
-    std::vector<float> dNormals( nFaces * 3 * 3);
-    size_t toidx = 0;
+		// We set normals 1-per-poly-point
+		std::vector<float> dNormals( nFaces * 3 * 3 );
+		size_t toidx = 0;
 		for (int i = 0; i < nFaces; i++)
 		{
-      for (int j = 0; j < 3; j++)
-      {
-        Point3& normal = pNormalData[pFaces[i].GetNormalID( j )];
-        dNormals[toidx++] = normal.x;
-        dNormals[toidx++] = normal.y;
-        dNormals[toidx++] = normal.z;
-      }
+			for (int j = 0; j < 3; j++)
+			{
+				Point3& normal = pNormalData[pFaces[i].GetNormalID( j )];
+				dNormals[toidx++] = normal.x;
+				dNormals[toidx++] = normal.y;
+				dNormals[toidx++] = normal.z;
+			}
 		}
-    FabricCore::RTVal arg = FabricCore::RTVal::ConstructExternalArray(client, "Float32", nFaces * 3 * 3, &dNormals[0]);
-		rtMesh.callMethod("", "setNormalsFromExternalArray", 1, &arg );
+		FabricCore::RTVal arg = FabricCore::RTVal::ConstructExternalArray( client, "Float32", nFaces * 3 * 3, &dNormals[0] );
+		rtMesh.callMethod( "", "setNormalsFromExternalArray", 1, &arg );
 	}
 	else
 	{
-		rtMesh.callMethod("", "recomputePointNormals", 0, NULL);
+		rtMesh.callMethod( "", "recomputePointNormals", 0, NULL );
 	}
 
-  // Send UV's
-  if (param.mapSupport( 1 ))
-  {
-    // Unpack UV's (explode by idx)
-    FabricCore::RTVal args[2];
-    std::vector<float> dUVs;
-    int uvIdx = 0;
-    dUVs.resize( param.numFaces * 3 * 2 );
-    for (size_t i = 0; i < param.numFaces; i++)
-    {
-      for (int j = 0; j < 3; j++)
-      {
-        int tVertIdx = param.tvFace[i].getTVert( j );
-        dUVs[uvIdx++] = param.tVerts[tVertIdx].x;
-        dUVs[uvIdx++] = param.tVerts[tVertIdx].y;
-      }
-    }
+	// Send UV's
+	const int buffSize = 8;
+	char buff[buffSize];
 
-    args[0] = FabricCore::RTVal::ConstructString( client, "uvs0" );
-    args[1] = FabricCore::RTVal::ConstructExternalArray( client, "Vec2", param.numFaces * 3, &dUVs[0] );
+	for (int map = 1; map < MAX_MESHMAPS; map++)
+	{
+		if (param.mapSupport( map ))
+		{
+			UVVert* verts = param.mapVerts( map );
+			TVFace* tfaces = param.mapFaces( map );
+			if (verts == nullptr || tfaces == nullptr)
+				continue;
 
-    // Force create UV's
-    rtMesh.callMethod( "", "setAttributeFromPolygonPackedData", 2, args );
-  }
+			// Unpack UV's (explode by idx)
+			FabricCore::RTVal args[2];
+			std::vector<float> dUVs;
+			int uvIdx = 0;
+			dUVs.resize( param.numFaces * 3 * 2 );
+
+			for (size_t i = 0; i < param.numFaces; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					int tVertIdx = tfaces[i].getTVert( j );
+					dUVs[uvIdx++] = verts[tVertIdx].x;
+					dUVs[uvIdx++] = verts[tVertIdx].y;
+				}
+			}
+
+			snprintf( buff, buffSize, "uvs%d", (map - 1) );
+			args[0] = FabricCore::RTVal::ConstructString( client, buff );
+			args[1] = FabricCore::RTVal::ConstructExternalArray( client, "Vec2", param.numFaces * 3, &dUVs[0] );
+
+			// Force create UV's
+			rtMesh.callMethod( "", "setAttributeFromPolygonPackedData", 2, args );
+		}
+	}
 	return;
 }
 
@@ -1187,19 +1200,39 @@ void FabricToMaxValue(const FabricCore::RTVal& rtv, Mesh& param)
 	// Init UV's
 	if(bHasUVs)
 	{
-		// Tell our mesh that yes, it does support mapping
-		param.setMapSupport(1);
+		// Init unchanging data
+		const int buffSize = 8;
+		char buff[buffSize];
+		std::vector<FabricCore::RTVal> args( 3 );
+		// We write directly to the destination array, which contains 3 floats per vert
+		args[2] = FabricCore::RTVal::ConstructUInt32( client, 3 ); // components
 
-		Tab<Point2> uvs;
-		uvs.SetCount(nbIndices);
-		std::vector<FabricCore::RTVal> args(2);
-		args[0] = FabricCore::RTVal::ConstructExternalArray(client, "Float32", uvs.Count() * 2, uvs.Addr(0));
-		args[1] = FabricCore::RTVal::ConstructUInt32(client, 2); // components
-		rtMesh.callMethod("", "getUVsAsExternalArray", 2, &args[0]);
 
-		param.setNumTVerts(nbIndices);
-		for (size_t i = 0; i < nbIndices; i++)
-			param.setTVert(i, uvs[i].x, uvs[i].y, 0.0f);
+		for (int i = 1; i < MAX_MESHMAPS; i++)
+		{
+			// Construct the name, test for validity
+			snprintf( buff, buffSize, "uvs%d", (i - 1) );
+			args[1] = FabricCore::RTVal::ConstructString( client, buff );
+			FabricCore::RTVal attribute = rtMesh.callMethod( "Ref<GeometryAttribute>", "getAttribute", 1, &args[1] );
+			bool doChannel = !attribute.isNullObject();
+			if (!doChannel)
+				break;
+
+			uint32_t numTVerts = nbIndices; // attribute.callMethod( "Size", "size", 0, 0 ).getUInt32();
+
+			if (numTVerts > 0)
+			{
+				// Tell our mesh that yes, it does support mapping
+				// We dump the Fabric UV's directly into the map channel
+				param.setMapSupport( i );
+				param.setNumMapVerts( i, numTVerts );
+				UVVert* verts = param.mapVerts( i );
+
+				args[0] = FabricCore::RTVal::ConstructExternalArray( client, "Float32", numTVerts * 3, verts );
+
+				rtMesh.callMethod( "", "getVec2AttributeAsExternalArray", 3, &args[0] );
+			}
+		}
 	}
 
 	// Get topology from rtMesh
@@ -1324,6 +1357,18 @@ void FabricToMaxValue(const FabricCore::RTVal& rtv, Mesh& param)
 		zeroIdxForFace += nVerts;
 	}
 
+	// Copy UV faces to all channels.
+	TVFace* uvFaces = param.mapFaces( 1 ); // These TVFaces should be initialized
+	for (int i = 2; i < MAX_MESHMAPS; i++)
+	{
+		if (!param.mapSupport( i ))
+			break;
+
+		TVFace* channelFaces = param.mapFaces( i );
+		memcpy( channelFaces, uvFaces, sizeof( TVFace ) * param.numFaces );
+	}
+
+	//TVFace* pBaseFace = param.tvFace
 	// Validate normals.
 	pNormalSpec->SetAllExplicit();
 	//pNormalSpec->CheckAllData(nTriFaces);
