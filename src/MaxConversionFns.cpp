@@ -630,7 +630,36 @@ void ConvertToRTVal( const Mesh& param, FabricCore::RTVal& rtMesh )
 			rtMesh.callMethod( "", "setAttributeFromPolygonPackedData", 2, args );
 		}
 	}
-	return;
+
+	// Send vertex colors
+	if (param.mapSupport( 0 ))
+	{
+		UVVert* verts = param.mapVerts( 0 );
+		TVFace* tfaces = param.mapFaces( 0 );
+		if (verts != nullptr && tfaces != nullptr)
+		{
+			std::vector<float> dUVs;
+			int uvIdx = 0;
+			const int numFloats = param.numFaces * 3 * 3;
+			dUVs.resize( numFloats );
+
+			for (size_t i = 0; i < param.numFaces; i++)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					int tVertIdx = tfaces[i].getTVert( j );
+					dUVs[uvIdx++] = verts[tVertIdx].x;
+					dUVs[uvIdx++] = verts[tVertIdx].y;
+					dUVs[uvIdx++] = verts[tVertIdx].z;
+				}
+			}
+
+			FabricCore::RTVal args[2];
+			args[0] = FabricCore::RTVal::ConstructExternalArray( client, "Float32", numFloats, &dUVs[0] );
+			args[1] = FabricCore::RTVal::ConstructUInt32( client, 3 ); // components
+			rtMesh.callMethod( "", "setVertexColorsFromExternalArray", 2, args );
+		}
+	}
 }
 
 template<typename T>
@@ -1175,7 +1204,8 @@ void FabricToMaxValue(const FabricCore::RTVal& rtv, Mesh& param)
 	UINT nbPoints = rtMesh.callMethod("UInt32", "pointCount", 0, 0).getUInt32();
 	UINT nbPolygons = rtMesh.callMethod("UInt32", "polygonCount", 0, 0).getUInt32();
 	UINT nbIndices = rtMesh.callMethod("UInt32", "polygonPointsCount", 0, 0).getUInt32();
-	bool bHasUVs = rtMesh.callMethod("Boolean", "hasUVs", 0, 0).getBoolean();
+	bool bHasUVs = rtMesh.callMethod( "Boolean", "hasUVs", 0, 0 ).getBoolean();
+	bool bHasVertColors = rtMesh.callMethod( "Boolean", "hasVertexColors", 0, 0 ).getBoolean();
 
 	if (nbPoints != int(nbPoints)) // try to catch overflow
 		return;
@@ -1233,6 +1263,20 @@ void FabricToMaxValue(const FabricCore::RTVal& rtv, Mesh& param)
 				rtMesh.callMethod( "", "getVec2AttributeAsExternalArray", 3, &args[0] );
 			}
 		}
+	}
+
+	if (bHasVertColors)
+	{
+		// Enable vertex colors
+		param.setMapSupport( 0 );
+		param.setNumMapVerts( 0, nbIndices );
+		UVVert* verts = param.mapVerts( 0 );
+
+		FabricCore::RTVal args[2];
+		args[0] = FabricCore::RTVal::ConstructExternalArray( client, "Float32", nbIndices * 3, verts );
+		args[1] = FabricCore::RTVal::ConstructUInt32( client, 3 ); // components
+
+		rtMesh.callMethod( "", "getVertexColorsAsExternalArray", 2, args );
 	}
 
 	// Get topology from rtMesh
@@ -1359,44 +1403,22 @@ void FabricToMaxValue(const FabricCore::RTVal& rtv, Mesh& param)
 
 	// Copy UV faces to all channels.
 	TVFace* uvFaces = param.mapFaces( 1 ); // These TVFaces should be initialized
-	for (int i = 2; i < MAX_MESHMAPS; i++)
+	// We include index 0 (vert colors) because that array
+	// requires TVFaces as well.
+	for (int i = 0; i < param.getNumMaps(); i++)
 	{
+		if (i == 1)
+			continue;
 		if (!param.mapSupport( i ))
-			break;
+			continue;
+
 
 		TVFace* channelFaces = param.mapFaces( i );
 		memcpy( channelFaces, uvFaces, sizeof( TVFace ) * param.numFaces );
 	}
 
-	//TVFace* pBaseFace = param.tvFace
 	// Validate normals.
 	pNormalSpec->SetAllExplicit();
-	//pNormalSpec->CheckAllData(nTriFaces);
-
-	//if(rtMesh.callMethod("Boolean", "hasVertexColors", 0, 0).getBoolean())
-	//{
-	//	Tab<Point4> colors;
-	//	colors.SetCount(nbIndices);
-	//	std::vector<FabricCore::RTVal> args(2);
-	//	args[0] = FabricCore::RTVal::ConstructExternalArrayRTVal("Float32", nbIndices * 4, colors.Addr(0));
-	//	args[1] = FabricCore::RTVal::ConstructUInt32RTVal(4); // components
-	//	rtMesh.callMethod("", "getVertexColorsAsExternalArray", 2, &args[0]);
-
-	//	// how do color verts work on MNMesh?
-	//	MIntArray face(nbSamples);
-	//	MIntArray indices(nbSamples);
-	//	unsigned int offset = 0;
-	//	for(unsigned int i=0;i<mayaCounts.length();i++)
-	//	{
-	//		for(unsigned int j=0;j<mayaCounts[i];j++,offset++)
-	//		{
-	//			face[offset] = i;
-	//			indices[offset] = j;
-	//		}
-	//	}
-	//	mesh.setFaceVertexColors(values, face, indices);
-	//}
-
 	param.InvalidateGeomCache();
 	param.InvalidateTopologyCache();
 
