@@ -1186,7 +1186,57 @@ void FabricToMaxValue(const FabricCore::RTVal& rtVal, Matrix3& param)
 	param.ValidateFlags();
 }
 
-void FabricToMaxValue(const FabricCore::RTVal& rtv, Mesh& param)
+void ConvertUVs( FabricCore::Client client, FabricCore::RTVal &rtMesh, UINT nbIndices, Mesh &param )
+{
+	// Init unchanging data
+	const int buffSize = 8;
+	char buff[buffSize];
+	std::vector<FabricCore::RTVal> args( 3 );
+	// We write directly to the destination array, which contains 3 floats per vert
+	args[2] = FabricCore::RTVal::ConstructUInt32( client, 3 ); // components
+
+	for (int i = 1; i < MAX_MESHMAPS; i++)
+	{
+		// Construct the name, test for validity
+		snprintf( buff, buffSize, "uvs%d", (i - 1) );
+		args[1] = FabricCore::RTVal::ConstructString( client, buff );
+		FabricCore::RTVal attribute = rtMesh.callMethod( "Ref<GeometryAttribute>", "getAttribute", 1, &args[1] );
+		bool doChannel = !attribute.isNullObject();
+		if (!doChannel)
+			break;
+
+		uint32_t numTVerts = nbIndices; // attribute.callMethod( "Size", "size", 0, 0 ).getUInt32();
+
+		if (numTVerts > 0)
+		{
+			// Tell our mesh that yes, it does support mapping
+			// We dump the Fabric UV's directly into the map channel
+			param.setMapSupport( i );
+			param.setNumMapVerts( i, numTVerts );
+			UVVert* verts = param.mapVerts( i );
+
+			args[0] = FabricCore::RTVal::ConstructExternalArray( client, "Float32", numTVerts * 3, verts );
+
+			rtMesh.callMethod( "", "getVec2AttributeAsExternalArray", 3, &args[0] );
+		}
+	}
+}
+
+void ConvertVertColors( Mesh &param, UINT nbIndices, FabricCore::Client client, FabricCore::RTVal &rtMesh )
+{
+	// Enable vertex colors
+	param.setMapSupport( 0 );
+	param.setNumMapVerts( 0, nbIndices );
+	UVVert* verts = param.mapVerts( 0 );
+
+	FabricCore::RTVal args[2];
+	args[0] = FabricCore::RTVal::ConstructExternalArray( client, "Float32", nbIndices * 3, verts );
+	args[1] = FabricCore::RTVal::ConstructUInt32( client, 3 ); // components
+
+	rtMesh.callMethod( "", "getVertexColorsAsExternalArray", 2, args );
+}
+
+void FabricToMaxValue( const FabricCore::RTVal& rtv, Mesh& param )
 {
 	if (rtv.isNullObject())
 	{
@@ -1230,53 +1280,13 @@ void FabricToMaxValue(const FabricCore::RTVal& rtv, Mesh& param)
 	// Init UV's
 	if(bHasUVs)
 	{
-		// Init unchanging data
-		const int buffSize = 8;
-		char buff[buffSize];
-		std::vector<FabricCore::RTVal> args( 3 );
-		// We write directly to the destination array, which contains 3 floats per vert
-		args[2] = FabricCore::RTVal::ConstructUInt32( client, 3 ); // components
-
-
-		for (int i = 1; i < MAX_MESHMAPS; i++)
-		{
-			// Construct the name, test for validity
-			snprintf( buff, buffSize, "uvs%d", (i - 1) );
-			args[1] = FabricCore::RTVal::ConstructString( client, buff );
-			FabricCore::RTVal attribute = rtMesh.callMethod( "Ref<GeometryAttribute>", "getAttribute", 1, &args[1] );
-			bool doChannel = !attribute.isNullObject();
-			if (!doChannel)
-				break;
-
-			uint32_t numTVerts = nbIndices; // attribute.callMethod( "Size", "size", 0, 0 ).getUInt32();
-
-			if (numTVerts > 0)
-			{
-				// Tell our mesh that yes, it does support mapping
-				// We dump the Fabric UV's directly into the map channel
-				param.setMapSupport( i );
-				param.setNumMapVerts( i, numTVerts );
-				UVVert* verts = param.mapVerts( i );
-
-				args[0] = FabricCore::RTVal::ConstructExternalArray( client, "Float32", numTVerts * 3, verts );
-
-				rtMesh.callMethod( "", "getVec2AttributeAsExternalArray", 3, &args[0] );
-			}
-		}
+		ConvertUVs( client, rtMesh, nbIndices, param );
 	}
 
 	if (bHasVertColors)
 	{
-		// Enable vertex colors
-		param.setMapSupport( 0 );
-		param.setNumMapVerts( 0, nbIndices );
-		UVVert* verts = param.mapVerts( 0 );
+		ConvertVertColors( param, nbIndices, client, rtMesh );
 
-		FabricCore::RTVal args[2];
-		args[0] = FabricCore::RTVal::ConstructExternalArray( client, "Float32", nbIndices * 3, verts );
-		args[1] = FabricCore::RTVal::ConstructUInt32( client, 3 ); // components
-
-		rtMesh.callMethod( "", "getVertexColorsAsExternalArray", 2, args );
 	}
 
 	// Get topology from rtMesh
