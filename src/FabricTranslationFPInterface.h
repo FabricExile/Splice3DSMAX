@@ -26,6 +26,9 @@ protected:
 	// The command handler to route commands into 
 	MaxDFGCmdHandler m_fabricCmdHandler;
 
+	// The rectangle for this classes dlg's position
+	RECT m_widgetWindowPos;
+
 public:
 
 	FabricTranslationFPInterface();
@@ -198,6 +201,7 @@ public:
 	// Implement the functions exposed above
 	BOOL ShowDFGGraphEditor();
 	void CloseDFGGraphEditor();
+	void UpdateDlgPosition();
 
 	// The following are direct mappers to the commands defined by the DFGCmdHandler classed.
 	void DFGRemoveNodes(const Tab<TSTR*>& nodeNames, const MSTR& execPath);

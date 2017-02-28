@@ -549,6 +549,9 @@ ReferenceTarget *FabricTranslationLayer<TBaseClass, TResultType>::Clone(RemapDir
 #define KL_CODE_OUTPORT_CHUNK	0x21
 #define KL_CODE_SOURCE_CHUNK	0x22
 
+// Added post-2.4, remember widget pos
+#define DFG_WIDGET_POS			0x30
+
 // Save our local parameters
 template<typename TBaseClass, typename TResultType>
 IOResult FabricTranslationLayer<TBaseClass, TResultType>::Save( ISave *isave )
@@ -563,6 +566,14 @@ IOResult FabricTranslationLayer<TBaseClass, TResultType>::Save( ISave *isave )
   isave->BeginChunk(PARAM_VALUE_NAME);
   const char* outName = m_outArgName.c_str();
   isave->WriteCString(outName);
+  isave->EndChunk();
+
+  // DFG Widget position
+  UpdateDlgPosition();
+  isave->BeginChunk( DFG_WIDGET_POS );
+  ULONG junk;
+  isave->WriteVoid( &m_widgetWindowPos, sizeof(m_widgetWindowPos), &junk );
+  DbgAssert( junk == sizeof( m_widgetWindowPos ) );
   isave->EndChunk();
 
   // Save additional values for derived values
@@ -613,6 +624,12 @@ IOResult FabricTranslationLayer<TBaseClass, TResultType>::Load( ILoad *iload )
         
         break;
       }
+	case DFG_WIDGET_POS:
+	{
+		ULONG nread;
+		iload->ReadVoid( &m_widgetWindowPos, sizeof( m_widgetWindowPos ), &nread );
+		break;
+	}
     case EXTRA_CLASS_DATA:
       {
         // Load implementation-specific data

@@ -58,3 +58,30 @@ QString ToQStr( const MSTR& ms )
 	QString str = ms.ToCStr().data();
 	return str;
 }
+
+//////////////////////////////////////////////////////////////////////////
+static MSTR fabricMaxDir;
+extern const MSTR& GetFabricMaxEnvDir()
+{
+	if (fabricMaxDir.isNull())
+	{
+		// On first run, evaluate the script that defines our function
+		size_t buffSize = 0;
+		char* buff;
+		int success = _dupenv_s( &buff, &buffSize, "FABRIC3DSMAXDIR" );
+		if (success == 0)
+		{
+			fabricMaxDir = MSTR::FromACP( buff, buffSize );
+			// Force-append trailing slash
+			fabricMaxDir += _M( "\\" );
+		}
+		else
+			fabricMaxDir = nullptr;
+	}
+	return fabricMaxDir;
+}
+
+void Free3dsMaxEnvDir()
+{
+	fabricMaxDir = nullptr;
+}

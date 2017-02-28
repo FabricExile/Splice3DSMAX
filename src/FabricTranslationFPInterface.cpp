@@ -15,7 +15,7 @@ FabricTranslationFPInterface::FabricTranslationFPInterface()
 	, m_pDFGWidgetWindow(nullptr)
 	, m_fabricCmdHandler(this)
 {
-
+	memset( &m_widgetWindowPos, 0, sizeof( m_widgetWindowPos ) );
 }
 
 FabricTranslationFPInterface::~FabricTranslationFPInterface()
@@ -36,12 +36,28 @@ BOOL FabricTranslationFPInterface::ShowDFGGraphEditor()
 	pWidget->SetCallbackItem( CastToRefTarg() );
 
 	m_pDFGWidgetWindow->SetWidget(dlg);
+
+	// If this is -not- the first time this widget is created,
+	// we will have valid position value and should set it
+	if (m_widgetWindowPos.bottom != 0 || m_widgetWindowPos.left != 0)
+	{
+		// We read settings after the widget is set, otherwise
+		// it can override the settings loaded here.
+		m_pDFGWidgetWindow->SetDlgPosition( m_widgetWindowPos );
+	}
 	return TRUE;
 }
 
 void FabricTranslationFPInterface::CloseDFGGraphEditor()
 {
-	SAFE_DELETE(m_pDFGWidgetWindow);
+	UpdateDlgPosition();
+	SAFE_DELETE( m_pDFGWidgetWindow );
+}
+
+void FabricTranslationFPInterface::UpdateDlgPosition()
+{
+	if (m_pDFGWidgetWindow != nullptr)
+		m_widgetWindowPos = m_pDFGWidgetWindow->GetDlgPosition();
 }
 
 //////////////////////////////////////////////////////////////////////////
