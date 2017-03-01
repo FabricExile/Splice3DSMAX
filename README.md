@@ -1,8 +1,8 @@
-Fabric Fabric for Autodesk 3DSMAX
+Fabric for Autodesk 3ds Max
 ===================================
-A Fabric Fabric integration for 3DSMAX.
+Fabric for 3ds Max is the integration of Fabric Canvas in 3ds Max.
 
-Fabric Fabric for 3DSMAX allows you to make use of the Fabric Core inside of 3DSMAX and use KL to perform computations inside of 3DSMAX using a custom node.
+The plugin allows you to use Fabric inside your 3ds Max projects for procedural geometry creation, deformation and controlling the transformation of objects (e.g. for rigging).
 
 Repository Status
 =================
@@ -12,7 +12,7 @@ This repository will be maintained and kept up to date by Fabric Software to mat
 Supported platforms
 ===================
 
-To date only the Windows platform is supported, since 3DSMAX only supports that.
+Windows
 
 Building
 ========
@@ -21,7 +21,7 @@ A scons (http://www.scons.org/) build script is provided. Fabric Fabric for 3DSM
 * A dynamic build of Fabric Core (matching the latest version).
 * The FabricAPI repository checked out one level above (http://github.com/fabric-engine/FabricAPI)
 
-Fabric Fabric for 3DSMAX requires a certain folder structure to build properly. You will need to have the FabricAPI cloned as well on your drive, as such:
+Fabric Fabric for 3ds Max requires a certain folder structure to build properly. You will need to have the FabricAPI cloned as well on your drive, as such:
 
     FabricAPI
     Applications/Fabric3DSMAX
