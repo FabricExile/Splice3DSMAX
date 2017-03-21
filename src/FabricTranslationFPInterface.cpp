@@ -347,10 +347,10 @@ void FabricTranslationFPInterface::DFGDoDismissLoadDiags( Tab<int>& indices )
 	MAXSPLICE_CATCH_END
 }
 
-MSTR FabricTranslationFPInterface::DFGDoCreatePreset( const MSTR& nodeName, const MSTR& presetDirPath, const MSTR& presetName, const MSTR& execPath )
+MSTR FabricTranslationFPInterface::DFGDoCreatePreset( const MSTR& nodeName, const MSTR& presetDirPath, const MSTR& presetName, const MSTR& execPath, bool updateOrigPreset )
 {
 	MAXSPLICE_CATCH_BEGIN
-	QString res = m_fabricCmdHandler.dfgDoCreatePreset( m_binding, ToQStr(execPath), GetExec( execPath ), ToQStr( nodeName), ToQStr( presetDirPath), ToQStr( presetName ));
+	QString res = m_fabricCmdHandler.dfgDoCreatePreset( m_binding, ToQStr(execPath), GetExec( execPath ), ToQStr( nodeName), ToQStr( presetDirPath), ToQStr( presetName ), updateOrigPreset);
 	return ToMstr(res);
 	MAXSPLICE_CATCH_RETURN( _M( "Exception occured" ) )
 }

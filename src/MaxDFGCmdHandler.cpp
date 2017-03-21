@@ -430,11 +430,11 @@ void MaxDFGCmdHandler::dfgDoSplitFromPreset(FabricCore::DFGBinding const &bindin
 	return __super::dfgDoSplitFromPreset(binding, execPath, exec);
 }
 
-QString MaxDFGCmdHandler::dfgDoCreatePreset( FabricCore::DFGBinding const &binding, QString execPath, FabricCore::DFGExec const &exec, QString nodeName, QString presetDirPath, QString presetName )
+QString MaxDFGCmdHandler::dfgDoCreatePreset( FabricCore::DFGBinding const &binding, QString execPath, FabricCore::DFGExec const &exec, QString nodeName, QString presetDirPath, QString presetName, bool updateOrigPreset )
 {
 	EMIT3( _M( "DFGDoCreatePreset" ), nodeName, presetDirPath, presetName, execPath );
 	DFGHoldActions hold( _M( "DFG Do Create Preset" ) );
-	return __super::dfgDoCreatePreset( binding, execPath, exec, nodeName, presetDirPath, presetName );
+	return __super::dfgDoCreatePreset( binding, execPath, exec, nodeName, presetDirPath, presetName, updateOrigPreset );
 }
 
 QString MaxDFGCmdHandler::dfgDoEditNode( FabricCore::DFGBinding const &binding, QString execPath, FabricCore::DFGExec const &exec, QString oldNodeName, QString desiredNewNodeName, QString nodeMetadata, QString execMetadata )
