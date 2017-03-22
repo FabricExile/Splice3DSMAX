@@ -144,7 +144,7 @@ RegisterFabricEngineMenu()
 -- Register a on-shutdown event to remove our menu's.
 -- We don't want them appearing in max when this
 -- script hasn't been executed
-callbacks.addScript #preSystemShutdown "DeRegisterFabricMenu()" id:#FabricRemoveMenu
+callbacks.addScript #preSystemShutdown "DeRegisterFabricEngineMenu()" id:#FabricRemoveMenu
 
 -- Our default initial state is Fabric cleaned up and rendering on
 fn InitFabricToDefault = (
