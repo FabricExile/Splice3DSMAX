@@ -104,6 +104,9 @@
   #define SM_CYCURSOR             14
 #endif
 
+// FE-8325  Make use of ::std::min across all the file
+#include <algorithm> 
+
 inline BOOL IsMenu(HMENU hMenu)
 {
 	MENUITEMINFO mii = { sizeof(MENUITEMINFO) };
@@ -202,7 +205,7 @@ inline int WINAPI lstrlenA(LPCSTR lpszString)
   {
 	if(lpstrDest == NULL || lpstrSrc == NULL || nLength <= 0)
 		return NULL;
-	int nLen = min(lstrlen(lpstrSrc), nLength - 1);
+	int nLen = ::std::min(lstrlen(lpstrSrc), nLength - 1);
 	LPTSTR lpstrRet = (LPTSTR)memcpy(lpstrDest, lpstrSrc, nLen * sizeof(TCHAR));
 	lpstrDest[nLen] = 0;
 	return lpstrRet;
@@ -221,7 +224,7 @@ inline int WINAPI lstrlenA(LPCSTR lpszString)
   {
 	if(lpstrDest == NULL || lpstrSrc == NULL || nLength <= 0)
 		return NULL;
-	int nLen = min(lstrlenA(lpstrSrc), nLength - 1);
+	int nLen = ::std::min(lstrlenA(lpstrSrc), nLength - 1);
 	LPSTR lpstrRet = (LPSTR)memcpy(lpstrDest, lpstrSrc, nLen * sizeof(char));
 	lpstrDest[nLen] = 0;
 	return lpstrRet;
@@ -732,7 +735,7 @@ namespace SecureHelper
 		}
 		else if(cchCount == _TRUNCATE)
 		{
-			cchCount = min(cchDest - 1, size_t(lstrlenA(lpstrSrc)));
+			cchCount = ::std::min(cchDest - 1, size_t(lstrlenA(lpstrSrc)));
 			nRet = STRUNCATE;
 		}
 		else if(cchDest <= cchCount)
@@ -759,7 +762,7 @@ namespace SecureHelper
 		}
 		else if(cchCount == _TRUNCATE)
 		{
-			cchCount = min(cchDest - 1, size_t(lstrlenW(lpstrSrc)));
+			cchCount = ::std::min(cchDest - 1, size_t(lstrlenW(lpstrSrc)));
 			nRet = STRUNCATE;
 		}
 		else if(cchDest <= cchCount)

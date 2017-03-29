@@ -410,7 +410,7 @@ RefResult FabricTranslationLayer<TBaseClass, TResultType>::NotifyRefChanged(cons
 			  ReferenceTarget* changedRef = m_pblock->GetReferenceTarget( pid );
 			  int nParams = m_pblock->NumParams();
 			  // We do not guarantee every parameter will have a validity
-			  nParams = min( nParams, m_portValidities.size() );
+			  nParams = __min( nParams, m_portValidities.size() );
 			  for (int ridx = 0; ridx < nParams; ridx++)
 			  {
 				  if (ridx != pidx && reftarg_type( pdefs[ridx].type ))
