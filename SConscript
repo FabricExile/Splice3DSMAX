@@ -4,7 +4,8 @@
 
 import os, platform
 
-Import('parentEnv')
+Import('parentEnv', 
+          'MAX_VERSION')
 
 buildOS = platform.system()
 buildArch = 'x86_64'
@@ -16,12 +17,6 @@ prebuilt_dir = os.path.join(scenegraph_dir, 'ThirdParty', 'PreBuilt', buildOS, b
 env = parentEnv.Clone()
 
 stageDir = env.Dir(scenegraph_dir).Dir('stage').Dir(buildOS).Dir(buildArch).Dir(buildType)
-
-maxVersions = ['2015', '2016', '2017']
-
-if os.environ.has_key('FABRIC_SPLICE_MAX_VERSION'):
-  maxVersions = [os.environ['FABRIC_SPLICE_MAX_VERSION']]
-
 
 env['ENV'] = os.environ
   
@@ -39,19 +34,15 @@ env['ENV']['FABRIC_SCENE_GRAPH_DIR'] = scenegraph_dir
 
 maxFiles = []
 srcnodeDir = env.Dir('.').srcnode().abspath
-maxBuild = None
-for maxVersion in maxVersions:
-    prevBuild = maxBuild
-    maxBuild = env.Command(
-        'build max '+maxVersion,
-        [],
-        [
-            ['cmd.exe', '/c', os.path.join(srcnodeDir, 'build.bat'), '16', maxVersion, 'x64', os.path.join(srcnodeDir, 'Fabric3dsmax.sln')],
-        ]
-    )
-    Depends(maxBuild,prevBuild)
-    maxFiles.append(maxBuild)
+maxBuild = env.Command(
+    'build max '+ MAX_VERSION,
+    [],
+    [
+        ['cmd.exe', '/c', os.path.join(srcnodeDir, 'build.bat'), '16', MAX_VERSION, 'x64', os.path.join(srcnodeDir, 'Fabric3dsmax.sln')],
+    ]
+)
+maxFiles.append(maxBuild)
 
-alias = env.Alias('splicemax', maxFiles)
+alias = env.Alias('splicemax_build', maxFiles)
 spliceData = (alias, maxFiles)
 Return('spliceData')
