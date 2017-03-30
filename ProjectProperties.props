@@ -98,7 +98,7 @@
 			<FunctionLevelLinking>true</FunctionLevelLinking>
 			<PrecompiledHeader>Use</PrecompiledHeader>
 			<DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-			<PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;QT_QTWINMIGRATE_IMPORT;FEC_SHARED;FECS_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+			<PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;QT_QTWINMIGRATE_IMPORT;FEC_SHARED;FECS_SHARED;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 			<RuntimeLibrary>MultiThreaded</RuntimeLibrary>
 		</ClCompile>        
 

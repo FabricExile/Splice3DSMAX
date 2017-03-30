@@ -1319,7 +1319,7 @@ void FabricToMaxValue( const FabricCore::RTVal& rtv, Mesh& param )
 	// the number of tri's we will need
 	UINT nTriFaces = 0;
 	for (UINT i = 0; i < nbPolygons; i++)
-		nTriFaces += max(faceVtxCount[i] - 2, 0);
+		nTriFaces += __max(faceVtxCount[i] - 2, 0);
 
 	// Sanity
 	if (nTriFaces == 0)
