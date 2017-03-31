@@ -153,7 +153,7 @@ public:
 		// New items Fabric 2.3
 		FN_5(fn_dfgDoEditNode,		TYPE_TSTR_BV,		DFGDoEditNode,			TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR);
 		VFN_1(fn_dfgDoDismissLoadDiags,					DFGDoDismissLoadDiags,	TYPE_INT_TAB_BR);
-		FN_4(fn_dfgDoCreatePreset, TYPE_TSTR_BV,		DFGDoCreatePreset,		TYPE_TSTR,		TYPE_TSTR, TYPE_TSTR, TYPE_TSTR );
+		FN_5(fn_dfgDoCreatePreset, TYPE_TSTR_BV,		DFGDoCreatePreset,		TYPE_TSTR,		TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_bool );
 
 		FN_9(fn_dfgDoAddInstPort,	TYPE_TSTR_BV,		DFGDoAddInstPort,		TYPE_TSTR, TYPE_TSTR, TYPE_ENUM, TYPE_TSTR, TYPE_TSTR, TYPE_ENUM, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR );
 		FN_8(fn_dfgDoAddInstBlockPort, TYPE_TSTR_BV,	DFGDoAddInstBlockPort,	TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR );
@@ -235,7 +235,7 @@ public:
 	// New in 2.3
 	MSTR DFGDoEditNode(const MSTR& oldNodeName, const MSTR& desiredNewNodeName, const MSTR& nodeMetadata, const MSTR& execMetadata, const MSTR& execPath);
 	void DFGDoDismissLoadDiags(Tab<int>& indices);
-	MSTR DFGDoCreatePreset(const MSTR& nodeName, const MSTR& presetDirPath, const MSTR& presetName, const MSTR& execPath );
+	MSTR DFGDoCreatePreset(const MSTR& nodeName, const MSTR& presetDirPath, const MSTR& presetName, const MSTR& execPath, bool updateOrigPreset );
 
 	MSTR DFGDoAddInstPort(const MSTR& instName, const MSTR& desiredPortName, int portType, const MSTR& typeSpec, const MSTR& pathToConnect, int connectType, const MSTR& extDep, const MSTR& metaData, const MSTR& execPath );
 	MSTR DFGDoAddInstBlockPort(const MSTR& instName, const MSTR& blockName, const MSTR& desiredPortName, const MSTR& typeSpec, const MSTR& pathToConnect, const MSTR& extDep, const MSTR& metaData, const MSTR& execPath );
