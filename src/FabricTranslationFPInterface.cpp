@@ -798,6 +798,7 @@ bool FabricTranslationFPInterface::RestoreFromJSON(const char* json, bool create
 	// The KL Editor has pointers to the current graph
 
 	FabricCore::DFGBinding binding = GetHost().createBindingFromJSON(json);
+	binding.setMetadata("host_app", "3dsMax", false);
 	SetBinding(binding);
 
 	// Setup port connections
