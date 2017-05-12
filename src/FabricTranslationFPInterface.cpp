@@ -231,10 +231,10 @@ Tab<TSTR*> FabricTranslationFPInterface::DFGExplodeNodes(const MSTR& nodeName, c
 	return Convert(res);
 	MAXSPLICE_CATCH_RETURN(Tab<TSTR*>());
 }
-void FabricTranslationFPInterface::DFGAddBackdrop(const MSTR& title, Point2 pos, const MSTR& execPath)
+MSTR FabricTranslationFPInterface::DFGAddBackdrop(const MSTR& title, Point2 pos, const MSTR& execPath)
 {
 	MAXSPLICE_CATCH_BEGIN
-	return m_fabricCmdHandler.dfgDoAddBackDrop(m_binding, ToQStr(execPath), GetExec(execPath), ToQStr(title), Convert(pos));
+	return ToMstr(m_fabricCmdHandler.dfgDoAddBackDrop(m_binding, ToQStr(execPath), GetExec(execPath), ToQStr(title), Convert(pos)));
 	MAXSPLICE_CATCH_END
 }
 void FabricTranslationFPInterface::DFGSetNodeComment(const MSTR& nodeName, const MSTR& comment, const MSTR& execPath)

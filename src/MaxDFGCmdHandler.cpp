@@ -335,7 +335,7 @@ QStringList MaxDFGCmdHandler::dfgDoExplodeNode(FabricCore::DFGBinding const &bin
 	return __super::dfgDoExplodeNode(binding, execPath, exec, nodeName);
 }
 
-void MaxDFGCmdHandler::dfgDoAddBackDrop(FabricCore::DFGBinding const &binding, QString execPath, FabricCore::DFGExec const &exec, QString title, QPointF pos)
+QString MaxDFGCmdHandler::dfgDoAddBackDrop(FabricCore::DFGBinding const &binding, QString execPath, FabricCore::DFGExec const &exec, QString title, QPointF pos)
 {
 	EMIT2(_M("DFGAddBackDrop"), title, pos, execPath);
 	DFGHoldActions hold(_M("DFG Add BackDrop"));
