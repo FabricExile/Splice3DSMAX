@@ -139,8 +139,8 @@ public:
 		VFN_3(fn_dfgMoveNodes,							DFGMoveNodes,			TYPE_TSTR_TAB_BV,	TYPE_POINT2_TAB_BR, TYPE_TSTR);
 		FN_3(fn_dfgImplodeNodes,	TYPE_TSTR_BV,		DFGImplodeNodes,		TYPE_TSTR_TAB_BV,	TYPE_TSTR, TYPE_TSTR);
 		FN_2(fn_dfgExplodeNodes,	TYPE_TSTR_TAB_BV,	DFGExplodeNodes,		TYPE_TSTR,		TYPE_TSTR);
-		VFN_3(fn_dfgAddBackdrop,						DFGAddBackdrop,			TYPE_TSTR,		TYPE_POINT2, TYPE_TSTR);
-		VFN_3(fn_dfgSetNodeComment,						DFGSetNodeComment,		TYPE_TSTR,		TYPE_TSTR, TYPE_TSTR);
+    FN_3(fn_dfgAddBackdrop,	TYPE_TSTR_BV,			DFGAddBackdrop,			TYPE_TSTR,		TYPE_POINT2, TYPE_TSTR);
+    VFN_3(fn_dfgSetNodeComment,						DFGSetNodeComment,		TYPE_TSTR,		TYPE_TSTR, TYPE_TSTR);
 		VFN_2(fn_dfgSetCode,							DFGSetCode,				TYPE_TSTR,		TYPE_TSTR);
 		FN_3(fn_dfgRenamePort,		TYPE_TSTR_BV,		DFGRenamePort,			TYPE_TSTR,		TYPE_TSTR, TYPE_TSTR);
 		FN_3(fn_dfgPaste,			TYPE_TSTR_TAB_BV,	DFGPaste,				TYPE_TSTR,		TYPE_POINT2, TYPE_TSTR);
@@ -220,7 +220,7 @@ public:
 	void DFGMoveNodes(Tab<TSTR*> nodeNames, Tab<Point2*> topLeftPoss, const MSTR& execPath);
 	MSTR DFGImplodeNodes(Tab<TSTR*> nodeNames, const MSTR& desiredNewNodeName, const MSTR& execPath);
 	Tab<TSTR*> DFGExplodeNodes(const MSTR& nodeName, const MSTR& execPath);
-	void DFGAddBackdrop(const MSTR& title, Point2 pos, const MSTR& execPath);
+	MSTR DFGAddBackdrop(const MSTR& title, Point2 pos, const MSTR& execPath);
 	void DFGSetNodeComment(const MSTR& nodeName, const MSTR& comment, const MSTR& execPath);
 	void DFGSetCode(const MSTR& code, const MSTR& execPath);
 	MSTR DFGRenamePort(const MSTR& oldName, const MSTR& newDesiredName, const MSTR& execPath);
@@ -477,7 +477,7 @@ FPInterfaceDesc* GetDescriptor()
 				_M("nodeName"), 0, TYPE_TSTR,
 				_M("execPath"), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
 				
-			FabricTranslationFPInterface::fn_dfgAddBackdrop, _T("DFGAddBackdrop"), 0, 0, 0, 3,
+			FabricTranslationFPInterface::fn_dfgAddBackdrop, _T("DFGAddBackdrop"), 0, TYPE_TSTR_BV, 0, 3,
 				_M("title"), 0, TYPE_TSTR,
 				_M("pos"), 0, TYPE_POINT2, 
 				_M("execPath"), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),

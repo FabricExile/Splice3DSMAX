@@ -165,7 +165,7 @@ virtual void dfgDoRemoveNodes(
     QString nodeName
     ) override;
 
-  virtual void dfgDoAddBackDrop(
+  virtual QString dfgDoAddBackDrop(
     FabricCore::DFGBinding const &binding,
     QString execPath,
     FabricCore::DFGExec const &exec,
