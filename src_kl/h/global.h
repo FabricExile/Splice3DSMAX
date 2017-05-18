@@ -632,7 +632,7 @@ public:
   void appendDesc( String::IOParam string ) const
   {
     if ( m_bits )
-      m_bits->objectCorePtr->lTableSwapPtrPtr->get()->appendDesc( &m_bits->objectCorePtr, string );
+      m_bits->objectCorePtr->lTableSwapPtrPtr->get()->appendDesc( &m_bits->objectCorePtr, 0, string );
     else string.append( "null", 4 );
   }
   
