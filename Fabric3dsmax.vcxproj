@@ -126,12 +126,22 @@
     <None Include="testingScripts\StartupMeshTimer.ms" />
     <None Include="testingScripts\SurfaceAttrPaintManipulation.ms" />
     <None Include="testingScripts\UnitTestAddRemovePort.ms" />
+    <None Include="testingScripts\UnitTestControllerPerformance.ms" />
+    <None Include="testingScripts\UnitTestFabricInterface.ms" />
     <None Include="testingScripts\UnitTestLoadSaveFabricFile.ms" />
+    <None Include="testingScripts\UnitTestLoadSaveMaxFile.ms" />
+    <None Include="testingScripts\UnitTestLoadSaveSpliceFile.ms" />
+    <None Include="testingScripts\UnitTestMaxClassControllers.ms" />
+    <None Include="testingScripts\UnitTestMaxClassModifier.ms" />
+    <None Include="testingScripts\UnitTestMaxClassObject.ms" />
+    <None Include="testingScripts\UnitTestMaxClassWSModifier.ms" />
     <None Include="testingScripts\UnitTestPortConnection.ms" />
     <None Include="testingScripts\UnitTestPortOptions.ms" />
     <None Include="testingScripts\UnitTestRegisterReloadExtns.ms" />
     <None Include="testingScripts\UnitTestFabricControllers.ms" />
     <None Include="testingScripts\UnitTestFabricModifier.ms" />
     <None Include="testingScripts\UnitTestFabricObject.ms" />
+    <None Include="testingScripts\UnitTestUtilFns.ms" />
+    <None Include="testingScripts\UnitTest_RunAll.ms" />
   </ItemGroup>
 </Project>
