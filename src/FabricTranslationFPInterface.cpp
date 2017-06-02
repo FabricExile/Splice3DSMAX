@@ -235,7 +235,7 @@ MSTR FabricTranslationFPInterface::DFGAddBackdrop(const MSTR& title, Point2 pos,
 {
 	MAXSPLICE_CATCH_BEGIN
 	return ToMstr(m_fabricCmdHandler.dfgDoAddBackDrop(m_binding, ToQStr(execPath), GetExec(execPath), ToQStr(title), Convert(pos)));
-	MAXSPLICE_CATCH_END
+	MAXSPLICE_CATCH_RETURN(_M("\n***Exception occured***\n"))
 }
 void FabricTranslationFPInterface::DFGSetNodeComment(const MSTR& nodeName, const MSTR& comment, const MSTR& execPath)
 {
