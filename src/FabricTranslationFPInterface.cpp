@@ -747,10 +747,11 @@ bool FabricTranslationFPInterface::LoadFromFile(const MCHAR* filename, bool crea
 	char * buffer = (char*)malloc(fileSize + 1);
 	buffer[fileSize] = '\0';
 
-  /* Debug
-	size_t readBytes = fread(buffer, 1, fileSize, file);
+#ifdef DEBUG // Prevents unused variable warning in release
+	size_t readBytes = 
+#endif
+	fread(buffer, 1, fileSize, file);
 	DbgAssert(readBytes == fileSize);
-  */
 
 	fclose(file);
 
