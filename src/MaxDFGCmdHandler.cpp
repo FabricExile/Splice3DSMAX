@@ -278,7 +278,7 @@ QString MaxDFGCmdHandler::dfgDoEditPort(FabricCore::DFGBinding const &binding, Q
 	QString res = __super::dfgDoEditPort(binding, execPath, exec, oldPortName, desiredNewPortName, portMode, typeSpec, extDep, uiMetadata);
 
 	
-	bool isPossibleMaxPort = portMode != FabricCore::DFGPortType_Out && execPath.isEmpty() || oldPortMode != portMode;
+	bool isPossibleMaxPort = portMode != FabricCore::DFGPortType_Out && execPath.isEmpty();
 	if (isPossibleMaxPort)
 	{
 		// If we have add a new 'in' port, by default we create a matching 3ds max port.
