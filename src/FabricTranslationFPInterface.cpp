@@ -841,6 +841,15 @@ MSTR FabricTranslationFPInterface::GetExecCode(const MSTR& execPath) {
 		return ToMstr(GetExec(execPath).getCode());
 	MAXSPLICE_CATCH_RETURN(_M("Exception getting code"));
 }
+
+DWORD FabricTranslationFPInterface::GetBindingId()
+{
+	const FabricCore::DFGBinding& binding = GetBinding();
+	if (binding.isValid())
+		return binding.getBindingID();
+	return 0;
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 MSTR FabricTranslationFPInterface::GetGraphName()

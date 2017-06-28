@@ -114,6 +114,8 @@ public:
 		prop_getOutPortName,
 		prop_SetOutPortName,
 
+		prop_getBindingId,
+
 		num_params,
 
 		port_mode_enum,
@@ -195,6 +197,7 @@ public:
 		
 		// Properties 
 		PROP_FNS(prop_getOutPortName, GetOutPortName, prop_SetOutPortName, SetOutPortName, TYPE_TSTR_BV);
+		RO_PROP_FN( prop_getBindingId, GetBindingId, TYPE_DWORD );
 		
 	END_FUNCTION_MAP
 
@@ -310,6 +313,8 @@ public:
 	// Props
 	virtual MSTR GetOutPortName() = 0;
 	virtual bool SetOutPortName(const MSTR& name) = 0;
+
+	DWORD GetBindingId();
 
 	//////////////////////////////////////////////////////////////////////////
 	// General management functions allows different templated
@@ -658,6 +663,8 @@ FPInterfaceDesc* GetDescriptor()
 
 		properties,
 			FabricTranslationFPInterface::prop_getOutPortName, FabricTranslationFPInterface::prop_SetOutPortName, _T("OutPort"), 0, TYPE_TSTR,
+
+			FabricTranslationFPInterface::prop_getBindingId, FP_NO_FUNCTION, _T( "BindingID" ), 0, TYPE_DWORD,
 
 		enums,
 			FabricTranslationFPInterface::port_mode_enum, 3,
