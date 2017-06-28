@@ -12,6 +12,8 @@ filein (rootFolder + "samples\\UnitTestPortConnection.ms")
 filein (rootFolder + "samples\\UnitTestLoadSaveMaxFile.ms")
 filein (rootFolder + "samples\\UnitTestLoadSaveSpliceFile.ms")
 filein (rootFolder + "samples\\UnitTestControllerPerformance.ms")
+
+filein (rootFolder + "samples\\UnitTest_FE8414_ChangeInternalPortType.ms")
 	
 fn DoTestAll = 
 (
@@ -36,6 +38,9 @@ fn DoTestAll =
 	-- not history to track against so simply makes assumptions about how fast 
 	-- fabric 'should' be relative to baisc Max controllers
 	if not (TestFunction TestControllerPerformance) do ( return false )
+	
+	-- Validate fix tests
+	if not (TestFunction TestFE8414) do ( return false )
 	
 	true
 )

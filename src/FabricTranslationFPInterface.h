@@ -114,6 +114,8 @@ public:
 		prop_getOutPortName,
 		prop_SetOutPortName,
 
+		prop_getBindingId,
+
 		num_params,
 
 		port_mode_enum,
@@ -195,6 +197,7 @@ public:
 		
 		// Properties 
 		PROP_FNS(prop_getOutPortName, GetOutPortName, prop_SetOutPortName, SetOutPortName, TYPE_TSTR_BV);
+		RO_PROP_FN( prop_getBindingId, GetBindingId, TYPE_DWORD );
 		
 	END_FUNCTION_MAP
 
@@ -310,6 +313,8 @@ public:
 	// Props
 	virtual MSTR GetOutPortName() = 0;
 	virtual bool SetOutPortName(const MSTR& name) = 0;
+
+	DWORD GetBindingId();
 
 	//////////////////////////////////////////////////////////////////////////
 	// General management functions allows different templated
@@ -536,11 +541,12 @@ FPInterfaceDesc* GetDescriptor()
 				_M( "execPath" ), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
 			FabricTranslationFPInterface::fn_dfgDoDismissLoadDiags, _T("DFGDoDismissLoadDiags"), 0, 0, 0, 1,
 				_M( "diagIndices" ), 0, TYPE_INT_TAB,
-			FabricTranslationFPInterface::fn_dfgDoCreatePreset, _T("DFGDoCreatePreset"), 0, TYPE_TSTR_BV, 0, 4,
+			FabricTranslationFPInterface::fn_dfgDoCreatePreset, _T("DFGDoCreatePreset"), 0, TYPE_TSTR_BV, 0, 5,
 				_M( "nodeName" ), 0, TYPE_TSTR,
 				_M( "presetDirPath" ), 0, TYPE_TSTR,
 				_M( "presetName" ), 0, TYPE_TSTR,
 				_M( "execPath" ), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
+				_M( "updateOrigPreset" ), 0, TYPE_bool, f_keyArgDefault, false,
 
 			FabricTranslationFPInterface::fn_dfgDoAddInstPort, _T( "DFGDoAddInstPort" ), 0, TYPE_TSTR_BV, 0, 9,
 				_M( "instName" ), 0, TYPE_TSTR,
@@ -658,6 +664,8 @@ FPInterfaceDesc* GetDescriptor()
 
 		properties,
 			FabricTranslationFPInterface::prop_getOutPortName, FabricTranslationFPInterface::prop_SetOutPortName, _T("OutPort"), 0, TYPE_TSTR,
+
+			FabricTranslationFPInterface::prop_getBindingId, FP_NO_FUNCTION, _T( "BindingID" ), 0, TYPE_DWORD,
 
 		enums,
 			FabricTranslationFPInterface::port_mode_enum, 3,
