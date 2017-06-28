@@ -686,9 +686,9 @@ void ConvertDRArrayToRTVal( Tab<T> tab, FabricCore::RTVal& rtArray )
 void ConvertToRTVal(const FPValue& param, FabricCore::RTVal& val)
 {
 	DbgAssert(val.isValid());
-	if (is_tab(param.type) || val.isArray())
+	if (is_tab(param.type))
 	{
-		if (is_tab(param.type) && val.isArray())
+		if (val.isArray())
 		{
 			switch ((int)root_type( param.type ))
 			{
@@ -725,6 +725,10 @@ void ConvertToRTVal(const FPValue& param, FabricCore::RTVal& val)
 
 				case TYPE_MESH:
 					return ConvertDRArrayToRTVal( *param.msh_tab, val );
+				case TYPE_FPVALUE:
+					// 2D Array maybe?
+					return ConvertDRArrayToRTVal( *param.fpv_tab, val );
+
 				default:
 					DbgAssert( _T( "Implement Me" ) );
 			}
