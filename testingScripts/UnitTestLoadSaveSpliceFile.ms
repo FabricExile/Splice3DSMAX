@@ -75,7 +75,7 @@ fn TestLoadSaveSpliceFile =
 	-------------------------------------------------------------------
 	-- Do full load/save/load loop here
 
-	bullet_boxes = DoLoadFile (sampleDir + "Bullet\\bullet_boxes.canvas");
+	bullet_boxes = DoLoadFile (sampleDir + "Bullet2\\06_tower.canvas");
 	-- Ironically, the bullet op doesn't take advantage of the EvalContext time parameter
 
 	bullet_boxes.SaveToFile tempFile

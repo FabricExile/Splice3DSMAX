@@ -103,13 +103,13 @@ fn TestMaxClassControllers =
 	sliderTime = 1f
 	sliderTime = 0f
 
-	testm = (matrix3 [1,-2.23517e-007,-1.63913e-007] [0,1,0] [1.19209e-007,0,1] [-3.2707,1.41048,23.5995])
+	testm = (matrix3 [0.739942,0.620885,-0.258819] [-0.536211,0.776747,0.330366] [0.406156,-0.10567,0.907673] [-10,10,0])
+	FAssert (matricesAreEquivalent p3.transform testm) "Bad rotation values1"
+	testm = (matrix3 [1,-1.63913e-007,1.3411e-007] [2.83122e-007,1,0] [0,0,1] [0.560062,7.25258,23.5995])
 	FAssert (matricesAreEquivalent p2.transform testm) "Bad child offset"
-	testm = (matrix3 [0.739942,0.671834,0.0335364] [-0.620886,0.662946,0.418335] [0.258819,-0.330366,0.907673] [-10,10,0])
-	FAssert (matricesAreEquivalent p3.transform testm) "Bad rotation values"
 	sliderTime = 50f
-	testm = (matrix3 [0.739942,0.671834,0.0335364] [-0.620886,0.662946,0.418335] [0.258819,-0.330366,0.907673] [1.66667,10,0])
-	FAssert (matricesAreEquivalent p3.transform testm) "Bad rotation values"
+	testm = (matrix3 [0.739942,0.620885,-0.258819] [-0.536212,0.776747,0.330366] [0.406156,-0.10567,0.907673] [1.66667,10,0])
+	FAssert (matricesAreEquivalent p3.transform testm) "Bad rotation values2"
 	-------------------------------------------------------------------------------------------------------------
 	-- Test float controller, input chaining
 	print "Test floats, input chaining"
@@ -125,11 +125,11 @@ fn TestMaxClassControllers =
 	dfgCtrl.x.controller = dfgFloatCtrl
 
 	sliderTime = 0
-	testm = (matrix3 [0.739942,0.642788,-0.198267] [-0.620885,0.766045,0.166366] [0.258819,0,0.965926] [-10,10,0])
-	FAssert (matricesAreEquivalent p3.transform testm) "Bad rotation values"
+	testm = (matrix3 [0.739942,0.620885,-0.258819] [-0.642788,0.766044,0] [0.198267,0.166366,0.965926] [-10,10,0])
+	FAssert (matricesAreEquivalent p3.transform testm) "Bad rotation values3"
 	sliderTime = 50f
-	testm = (matrix3 [1,-2.38419e-007,-2.5332e-007] [2.45869e-007,0.798292,0.60227] [1.3411e-007,-0.60227,0.798292] [8.39596,-11.0702,13.6661])
+	testm =(matrix3 [0.739942,0.620885,-0.258819] [-0.183438,0.556429,0.810393] [0.647176,-0.552167,0.525619] [1.66667,10,0])
+	FAssert (matricesAreEquivalent p3.transform testm) "Bad rotation values4"
+	testm = (matrix3 [0.90873,-0.0632109,-0.41257] [0.248548,0.87605,0.413231] [0.335311,-0.478059,0.811804] [18.4932,-4.35634,13.6661])
 	FAssert (matricesAreEquivalent p2.transform testm) "Bad rotation after setting dfg float input"
-	testm = (matrix3 [0.739942,0.516122,0.431398] [-0.620885,0.277274,0.733227] [0.258819,-0.810393,0.525619] [1.66667,10,0])
-	FAssert (matricesAreEquivalent p3.transform testm) "Bad rotation values"
 )

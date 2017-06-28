@@ -541,11 +541,12 @@ FPInterfaceDesc* GetDescriptor()
 				_M( "execPath" ), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
 			FabricTranslationFPInterface::fn_dfgDoDismissLoadDiags, _T("DFGDoDismissLoadDiags"), 0, 0, 0, 1,
 				_M( "diagIndices" ), 0, TYPE_INT_TAB,
-			FabricTranslationFPInterface::fn_dfgDoCreatePreset, _T("DFGDoCreatePreset"), 0, TYPE_TSTR_BV, 0, 4,
+			FabricTranslationFPInterface::fn_dfgDoCreatePreset, _T("DFGDoCreatePreset"), 0, TYPE_TSTR_BV, 0, 5,
 				_M( "nodeName" ), 0, TYPE_TSTR,
 				_M( "presetDirPath" ), 0, TYPE_TSTR,
 				_M( "presetName" ), 0, TYPE_TSTR,
 				_M( "execPath" ), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
+				_M( "updateOrigPreset" ), 0, TYPE_bool, f_keyArgDefault, false,
 
 			FabricTranslationFPInterface::fn_dfgDoAddInstPort, _T( "DFGDoAddInstPort" ), 0, TYPE_TSTR_BV, 0, 9,
 				_M( "instName" ), 0, TYPE_TSTR,

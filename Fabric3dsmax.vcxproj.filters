@@ -219,6 +219,36 @@
     <None Include="testingScripts\UnitTestFabricObject.ms">
       <Filter>MaxScript files\TestingScripts</Filter>
     </None>
+    <None Include="testingScripts\UnitTest_RunAll.ms">
+      <Filter>MaxScript files\TestingScripts</Filter>
+    </None>
+    <None Include="testingScripts\UnitTestControllerPerformance.ms">
+      <Filter>MaxScript files\TestingScripts</Filter>
+    </None>
+    <None Include="testingScripts\UnitTestFabricInterface.ms">
+      <Filter>MaxScript files\TestingScripts</Filter>
+    </None>
+    <None Include="testingScripts\UnitTestLoadSaveMaxFile.ms">
+      <Filter>MaxScript files\TestingScripts</Filter>
+    </None>
+    <None Include="testingScripts\UnitTestLoadSaveSpliceFile.ms">
+      <Filter>MaxScript files\TestingScripts</Filter>
+    </None>
+    <None Include="testingScripts\UnitTestMaxClassControllers.ms">
+      <Filter>MaxScript files\TestingScripts</Filter>
+    </None>
+    <None Include="testingScripts\UnitTestMaxClassModifier.ms">
+      <Filter>MaxScript files\TestingScripts</Filter>
+    </None>
+    <None Include="testingScripts\UnitTestMaxClassObject.ms">
+      <Filter>MaxScript files\TestingScripts</Filter>
+    </None>
+    <None Include="testingScripts\UnitTestMaxClassWSModifier.ms">
+      <Filter>MaxScript files\TestingScripts</Filter>
+    </None>
+    <None Include="testingScripts\UnitTestUtilFns.ms">
+      <Filter>MaxScript files\TestingScripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\DynamicParamBlocks\DynamicDialog\Fabric3dsmax.rc" />
