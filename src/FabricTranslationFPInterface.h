@@ -167,7 +167,7 @@ public:
 		FN_9(fn_dfgDoAddBlockPort,	TYPE_TSTR_BV,		DFGDoAddBlockPort,		TYPE_TSTR, TYPE_TSTR, TYPE_ENUM, TYPE_TSTR, TYPE_TSTR, TYPE_ENUM, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR );
 
 		// New items Fabric 2.6
-		FN_6(fn_dfgAddNLSPort,			TYPE_TSTR_BV,		DFGAddPort,				TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR);
+		FN_6(fn_dfgAddNLSPort,			TYPE_TSTR_BV,		DFGAddNLSPort,				TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR);
 		VFN_3(fn_dfgReorderNLSPorts,						DFGReorderNLSPorts,		TYPE_TSTR,		TYPE_INT_TAB_BR,	TYPE_TSTR);
 
 			// Max specific fns
@@ -600,7 +600,7 @@ FPInterfaceDesc* GetDescriptor()
 
 			// New in 2.6
 				
-			FabricTranslationFPInterface::fn_dfgAddNLSPort, _T("DFGAddNLSPort"), 0, TYPE_TSTR_BV, 0, 7,
+			FabricTranslationFPInterface::fn_dfgAddNLSPort, _T("DFGAddLocal"), 0, TYPE_TSTR_BV, 0, 7,
 				_M("desiredPortName"), 0, TYPE_TSTR,
 				_M("portSpec"), 0, TYPE_TSTR,
 				_M("portToConnect"), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
@@ -608,7 +608,7 @@ FPInterfaceDesc* GetDescriptor()
 				_M("metaData"), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
 				_M("execPath"), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
 				
-			FabricTranslationFPInterface::fn_dfgReorderPorts, _T("DFGReorderNLSPorts"), 0, 0, 0, 3,
+			FabricTranslationFPInterface::fn_dfgReorderPorts, _T("DFGReorderLocals"), 0, 0, 0, 3,
 				_M( "itemPath" ), 0, TYPE_TSTR, 
 				_T("indices"), 0, TYPE_INT_TAB_BR,
 				_M("execPath"), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),

@@ -562,7 +562,7 @@ QString MaxDFGCmdHandler::dfgDoAddNLSPort(FabricCore::DFGBinding const &binding,
 		MSTR cmd;
 		MSTR portTypeEnum = ToMSTR( portType );
 		cmd.printf( _M( "$.%s %s %s portToConnect:%s extDep:%s metaData:%s execPath:%s" ),
-					_M( "DFGAddNLSPort" ),
+					_M( "DFGAddLocal" ),
 					desiredPortName.data(),
 					typeSpec.data(),
 					portToConnect.data(),
@@ -573,7 +573,7 @@ QString MaxDFGCmdHandler::dfgDoAddNLSPort(FabricCore::DFGBinding const &binding,
 		macroRecorder->EmitScript();
 	}
 
-	DFGHoldActions hold(_M("DFG Add NLS"));
+	DFGHoldActions hold(_M("DFG Add Local"));
 
 	bool isPossibleMaxPort = portType != FabricCore::DFGPortType_Out && execPath.isEmpty();
 
@@ -582,7 +582,7 @@ QString MaxDFGCmdHandler::dfgDoAddNLSPort(FabricCore::DFGBinding const &binding,
 
 void MaxDFGCmdHandler::dfgDoReorderNLSPorts(FabricCore::DFGBinding const &binding, QString execPath, FabricCore::DFGExec const &exec, QString itemPath, QList<int> indices)
 {
-	EMIT2(_M("DFGReorderNLSPorts"), itemPath, indices, execPath);
-	DFGHoldActions hold(_M("DFG Re-order NLSPorts"));
+	EMIT2(_M("DFGReorderLocals"), itemPath, indices, execPath);
+	DFGHoldActions hold(_M("DFG Re-order Locals"));
 	return __super::dfgDoReorderPorts(binding, execPath, exec, itemPath, indices);
 }
