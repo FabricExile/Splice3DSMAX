@@ -78,6 +78,10 @@ public:
 		fn_dfgDoAddBlock,
 		fn_dfgDoAddBlockPort,
 
+		/// New in 2.6
+		fn_dfgAddNLSPort,
+		fn_dfgReorderNLSPorts,
+
 		// Max-specific fn's
 		fn_loadFromFile,
 		fn_saveToFile,
@@ -161,6 +165,11 @@ public:
 		FN_8(fn_dfgDoAddInstBlockPort, TYPE_TSTR_BV,	DFGDoAddInstBlockPort,	TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR );
 		FN_3(fn_dfgDoAddBlock,		TYPE_TSTR_BV,		DFGDoAddBlock,			TYPE_TSTR, TYPE_POINT2, TYPE_TSTR);
 		FN_9(fn_dfgDoAddBlockPort,	TYPE_TSTR_BV,		DFGDoAddBlockPort,		TYPE_TSTR, TYPE_TSTR, TYPE_ENUM, TYPE_TSTR, TYPE_TSTR, TYPE_ENUM, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR );
+
+		// New items Fabric 2.6
+		FN_6(fn_dfgAddNLSPort,			TYPE_TSTR_BV,		DFGAddPort,				TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR);
+		VFN_3(fn_dfgReorderNLSPorts,						DFGReorderNLSPorts,		TYPE_TSTR,		TYPE_INT_TAB_BR,	TYPE_TSTR);
+
 			// Max specific fns
 
 		FN_2(fn_loadFromFile, TYPE_bool, LoadFromFile, TYPE_FILENAME, TYPE_bool);
@@ -244,6 +253,10 @@ public:
 	MSTR DFGDoAddInstBlockPort(const MSTR& instName, const MSTR& blockName, const MSTR& desiredPortName, const MSTR& typeSpec, const MSTR& pathToConnect, const MSTR& extDep, const MSTR& metaData, const MSTR& execPath );
 	MSTR DFGDoAddBlock(const MSTR& desiredName, Point2 pos, const MSTR& execPath );
 	MSTR DFGDoAddBlockPort(const MSTR& blockName, const MSTR& desiredPortName, int portType, const MSTR& typeSpec, const MSTR& pathToConnect, int connectType, const MSTR& extDep, const MSTR& metaData, const MSTR& execPath );
+
+	// New in 2.6
+	MSTR DFGAddNLSPort(const MSTR& desiredPortName, const MSTR& portSpec, const MSTR& portToConnect, const MSTR& extDep, const MSTR& metaData, const MSTR& execPath);
+	void DFGReorderNLSPorts( const MSTR& itemPath, Tab<int> indices, const MSTR& execPath);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Allow introspecting the ports on this graph
@@ -584,6 +597,21 @@ FPInterfaceDesc* GetDescriptor()
 				_M( "extDep" ), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
 				_M( "metaData" ), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
 				_M( "execPath" ), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
+
+			// New in 2.6
+				
+			FabricTranslationFPInterface::fn_dfgAddNLSPort, _T("DFGAddNLSPort"), 0, TYPE_TSTR_BV, 0, 7,
+				_M("desiredPortName"), 0, TYPE_TSTR,
+				_M("portSpec"), 0, TYPE_TSTR,
+				_M("portToConnect"), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
+				_M("extDep"), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
+				_M("metaData"), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
+				_M("execPath"), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
+				
+			FabricTranslationFPInterface::fn_dfgReorderPorts, _T("DFGReorderNLSPorts"), 0, 0, 0, 3,
+				_M( "itemPath" ), 0, TYPE_TSTR, 
+				_T("indices"), 0, TYPE_INT_TAB_BR,
+				_M("execPath"), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
 
 			//////////////////////////////////////////////////////////////////////////
 			// FabricMax custom functions

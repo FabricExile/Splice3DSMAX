@@ -554,3 +554,35 @@ QString MaxDFGCmdHandler::dfgDoAddBlockPort( FabricCore::DFGBinding const &bindi
 	DFGHoldActions hold( _M( "DFG Add Block Port" ) );
 	return __super::dfgDoAddBlockPort( binding, execPath, exec, blockName, desiredPortName, portType, typeSpec, pathToConnect, connectType, extDep, metaData );
 }
+
+QString MaxDFGCmdHandler::dfgDoAddNLSPort(FabricCore::DFGBinding const &binding, QString execPath, FabricCore::DFGExec const &exec, QString desiredPortName, QString typeSpec, QString portToConnect, QString extDep, QString metaData)
+{
+	if (macroRecorder->Enabled())
+	{
+		MSTR cmd;
+		MSTR portTypeEnum = ToMSTR( portType );
+		cmd.printf( _M( "$.%s %s %s portToConnect:%s extDep:%s metaData:%s execPath:%s" ),
+					_M( "DFGAddNLSPort" ),
+					desiredPortName.data(),
+					typeSpec.data(),
+					portToConnect.data(),
+					extDep.data(),
+					metaData.data(),
+					execPath.data() );
+		macroRecorder->ScriptString( cmd.data() );
+		macroRecorder->EmitScript();
+	}
+
+	DFGHoldActions hold(_M("DFG Add NLS"));
+
+	bool isPossibleMaxPort = portType != FabricCore::DFGPortType_Out && execPath.isEmpty();
+
+	return __super::dfgDoAddNLSPort(binding, execPath, exec, desiredPortName, typeSpec, portToConnect, extDep, metaData);
+}
+
+void MaxDFGCmdHandler::dfgDoReorderNLSPorts(FabricCore::DFGBinding const &binding, QString execPath, FabricCore::DFGExec const &exec, QString itemPath, QList<int> indices)
+{
+	EMIT2(_M("DFGReorderNLSPorts"), itemPath, indices, execPath);
+	DFGHoldActions hold(_M("DFG Re-order NLSPorts"));
+	return __super::dfgDoReorderPorts(binding, execPath, exec, itemPath, indices);
+}

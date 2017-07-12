@@ -280,6 +280,25 @@ virtual void dfgDoRemoveNodes(
 
   virtual QString dfgDoAddBlockPort( FabricCore::DFGBinding const &binding, QString execPath, FabricCore::DFGExec const &exec, QString blockName, QString desiredPortName, FabricCore::DFGPortType portType, QString typeSpec, QString pathToConnect, FabricCore::DFGPortType connectType, QString extDep, QString metaData ) override;
 
+  virtual QString dfgDoAddNLSPort(
+    FabricCore::DFGBinding const &binding,
+    QString execPath,
+    FabricCore::DFGExec const &exec,
+    QString desiredPortName,
+    QString typeSpec,
+    QString portToConnect,
+    QString extDep,
+    QString metaData
+    ) override;
+
+  virtual void dfgDoReorderNLSPorts(
+    FabricCore::DFGBinding const &binding,
+    QString execPath,
+    FabricCore::DFGExec const &exec,
+    QString itemPath,
+    QList<int> indices
+    ) override;
+
 };
 
 
