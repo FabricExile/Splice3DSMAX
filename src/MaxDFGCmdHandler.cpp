@@ -560,7 +560,6 @@ QString MaxDFGCmdHandler::dfgDoAddNLSPort(FabricCore::DFGBinding const &binding,
 	if (macroRecorder->Enabled())
 	{
 		MSTR cmd;
-		MSTR portTypeEnum = ToMSTR( portType );
 		cmd.printf( _M( "$.%s %s %s portToConnect:%s extDep:%s metaData:%s execPath:%s" ),
 					_M( "DFGAddLocal" ),
 					desiredPortName.data(),
@@ -574,8 +573,6 @@ QString MaxDFGCmdHandler::dfgDoAddNLSPort(FabricCore::DFGBinding const &binding,
 	}
 
 	DFGHoldActions hold(_M("DFG Add Local"));
-
-	bool isPossibleMaxPort = portType != FabricCore::DFGPortType_Out && execPath.isEmpty();
 
 	return __super::dfgDoAddNLSPort(binding, execPath, exec, desiredPortName, typeSpec, portToConnect, extDep, metaData);
 }
