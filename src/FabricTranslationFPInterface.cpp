@@ -392,6 +392,23 @@ MSTR FabricTranslationFPInterface::DFGDoAddBlockPort( const MSTR& blockName, con
 	MAXSPLICE_CATCH_RETURN( _M( "\n***Exception occured***\n" ) )
 }
 
+MSTR FabricTranslationFPInterface::DFGAddNLSPort(const MSTR& desiredPortName, const MSTR& portSpec, const MSTR& portToConnect, const MSTR& extDep, const MSTR& metaData, const MSTR& execPath)
+{
+	MAXSPLICE_CATCH_BEGIN
+	CStr cExecPath = execPath.ToCStr();
+	return ToMstr(m_fabricCmdHandler.dfgDoAddNLSPort(m_binding, cExecPath.data(), GetExec(cExecPath.data()), ToQStr(desiredPortName), ToQStr(portSpec), ToQStr(portToConnect), ToQStr(extDep), ToQStr(metaData)));
+	MAXSPLICE_CATCH_RETURN(_M("\n***Exception occured***\n"))
+}
+
+void FabricTranslationFPInterface::DFGReorderNLSPorts( const MSTR& itemPath, Tab<int> indices, const MSTR& execPath)
+{
+	MAXSPLICE_CATCH_BEGIN
+	QList<int> qIndices;
+	Convert( indices, qIndices );
+	return m_fabricCmdHandler.dfgDoReorderNLSPorts(m_binding, ToQStr(execPath), GetExec(execPath), ToQStr(itemPath), qIndices );
+	MAXSPLICE_CATCH_END
+}
+
 // Allow introspecting the ports on this graph
 int FabricTranslationFPInterface::GetPortCount(const MSTR& execPath)
 {
