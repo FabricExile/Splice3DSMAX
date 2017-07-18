@@ -600,7 +600,7 @@ FPInterfaceDesc* GetDescriptor()
 
 			// New in 2.6
 				
-			FabricTranslationFPInterface::fn_dfgAddNLSPort, _T("DFGAddLocal"), 0, TYPE_TSTR_BV, 0, 7,
+			FabricTranslationFPInterface::fn_dfgAddNLSPort, _T("DFGAddLocal"), 0, TYPE_TSTR_BV, 0, 6,
 				_M("desiredPortName"), 0, TYPE_TSTR,
 				_M("portSpec"), 0, TYPE_TSTR,
 				_M("portToConnect"), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),

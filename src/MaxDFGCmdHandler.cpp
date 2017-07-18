@@ -272,8 +272,6 @@ QString MaxDFGCmdHandler::dfgDoEditPort(FabricCore::DFGBinding const &binding, Q
 		macroRecorder->EmitScript();
 	}
 
-	FabricCore::DFGPortType oldPortMode = const_cast<FabricCore::DFGExec&>(exec).getExecPortType( oldPortName.toStdString().c_str() );
-
 	DFGHoldActions hold(_M("DFG Edit Port"));
 	QString res = __super::dfgDoEditPort(binding, execPath, exec, oldPortName, desiredNewPortName, portMode, typeSpec, extDep, uiMetadata);
 
@@ -581,5 +579,5 @@ void MaxDFGCmdHandler::dfgDoReorderNLSPorts(FabricCore::DFGBinding const &bindin
 {
 	EMIT2(_M("DFGReorderLocals"), itemPath, indices, execPath);
 	DFGHoldActions hold(_M("DFG Re-order Locals"));
-	return __super::dfgDoReorderPorts(binding, execPath, exec, itemPath, indices);
+	return __super::dfgDoReorderNLSPorts(binding, execPath, exec, itemPath, indices);
 }
