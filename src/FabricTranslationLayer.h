@@ -23,6 +23,11 @@ namespace DynamicDialog
 {
 	class CDynamicDialogTemplate;
 };
+namespace FabricUI {
+	namespace Commands {
+		class CommandManager;
+	}
+}
 class IParamBlock2;
 class DynPBCustAttrClassDesc;
 
@@ -391,9 +396,10 @@ public:
 };
 
 
-extern FabricCore::Client& GetClient(bool doCreate= true, const char* contextId=nullptr);
+extern FabricCore::Client& GetClient(bool doCreate= true, const char* contextId=nullptr, bool isLoading = false);
 extern FabricCore::DFGHost& GetHost();
 extern FabricCore::RTVal& GetDrawing();
+extern FabricUI::Commands::CommandManager* GetCommandManager();
 
 extern void InstanceCreated(ReferenceTarget* instance);
 extern void InstanceDeleted( ReferenceTarget* instance );
