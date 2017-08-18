@@ -1303,10 +1303,17 @@ static FabricCore::Client s_client;
 static FabricCore::DFGHost s_Host;
 static FabricCore::RTVal s_drawing;
 
-FabricCore::Client& GetClient(bool doCreate/*=true*/, const char* contexId) 
+FabricCore::Client& GetClient( bool doCreate/*=true*/, const char* contexId, bool isLoading /*= false*/)
 {
 	if (!s_client.isValid() && doCreate)
 	{
+		bool isInteractive = !GetCOREInterface()->IsNetworkLicense();
+		// init Qt so we can show our splash screen
+		if (isInteractive)
+			AcquireQt();
+
+		FabricUI::FabricSplashScreenBracket splashBracket( isInteractive && !isLoading );
+
 		FabricCore::Client::ReportCallback pCallback = &myLogFunc;
 		if (contexId != nullptr)
 		{
