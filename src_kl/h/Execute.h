@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef KL2EDK_INCLUDE_MESSAGES
-  #pragma message ( "Including 'aliases.h'" )
+  #pragma message ( "Including 'Execute.h'" )
 #endif
 
 ////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 # error "This file needs to be rebuilt for the current EDK version!"
 #endif
 
-namespace Fabric { namespace EDK { namespace KL {
+// Core\Clients\CAPI\KL2EDK.cpp:812
+#include "global.h"
 
-}}}
 
