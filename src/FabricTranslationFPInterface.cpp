@@ -9,6 +9,8 @@
 
 #include <qwinwidget.h>
 #include "Fabric3dsmax.h"
+#include <FabricUI/DFG/Commands/DFGCommandRegistration.h>
+#include <FabricUI/DFG/Commands/DFGPathValueResolver.h>
 
 FabricTranslationFPInterface::FabricTranslationFPInterface()
 	: m_klEditor(nullptr)
@@ -901,6 +903,17 @@ void FabricTranslationFPInterface::SetBinding( FabricCore::DFGBinding binding )
 {
 	m_binding = binding;
 	m_binding.setNotificationCallback( BindingNotificationCallback, this );
+
+	//m_binding.setMetadata( "resolver_id", thisNode.name().asChar(), false );
+	m_binding.setMetadata( "host_app", "3dsMax", false );
+
+	int refId = Animatable::GetHandleByAnim( CastToRefTarg() );
+	QString resolverID = "DPVR" + QString::number( refId );
+	FabricUI::Commands::PathValueResolverFactory<FabricUI::DFG::DFGPathValueResolver>::Register( resolverID );
+	auto *resolver = dynamic_cast<FabricUI::DFG::DFGPathValueResolver *>(
+		FabricUI::Commands::PathValueResolverRegistry::getRegistry()->getResolver( resolverID )
+		);
+	resolver->onBindingChanged( m_binding );
 }
 
 MaxDFGCmdHandler* FabricTranslationFPInterface::GetCommandHandler()

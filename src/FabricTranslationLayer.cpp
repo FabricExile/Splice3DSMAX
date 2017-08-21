@@ -2,6 +2,17 @@
 #include "MeshNormalSpec.h"
 #include "ParameterBlockPatcher.h"
 
+#include <FabricUI\Commands\KLCommandManager.h>
+#include <FabricUI\Commands\KLCommandRegistry.h>
+#include <FabricUI\Application\FabricApplicationStates.h>
+#include <FabricUI\SplashScreens\FabricSplashScreen.h>
+
+#include <FabricUI\OptionsEditor\Commands\OptionEditorCommandRegistration.h>
+#include <FabricUI\Dialog\DialogCommandRegistration.h>
+
+#include "DockableWidget.h"
+
+
 //////////////////////////////////////////////////////////////////////////
 //--- DynPBDefAccessor -------------------------------------------------------
 #pragma region//Class DynPBDefAccessor
@@ -1303,10 +1314,17 @@ static FabricCore::Client s_client;
 static FabricCore::DFGHost s_Host;
 static FabricCore::RTVal s_drawing;
 
-FabricCore::Client& GetClient(bool doCreate/*=true*/, const char* contexId) 
+FabricCore::Client& GetClient( bool doCreate/*=true*/, const char* contexId, bool isLoading /*= false*/)
 {
 	if (!s_client.isValid() && doCreate)
 	{
+		bool isInteractive = !GetCOREInterface()->IsNetworkLicense();
+		// init Qt so we can show our splash screen
+		if (isInteractive)
+			AcquireQt();
+
+		FabricUI::FabricSplashScreenBracket splashBracket( isInteractive && !isLoading );
+
 		FabricCore::Client::ReportCallback pCallback = &myLogFunc;
 		if (contexId != nullptr)
 		{
@@ -1320,12 +1338,29 @@ FabricCore::Client& GetClient(bool doCreate/*=true*/, const char* contexId)
 			options.optimizationType = FabricCore::ClientOptimizationType_Background;
 			options.guarded = 1;
 
-      // Make sure we don't consume a interactive license if we are render node
-      options.licenseType = GetCOREInterface()->IsNetworkLicense() ?
-        FabricCore::ClientLicenseType_Compute :
-        FabricCore::ClientLicenseType_Interactive;
+			// Make sure we don't consume a interactive license if we are render node
+			options.licenseType = isInteractive ?
+				FabricCore::ClientLicenseType_Interactive :
+				FabricCore::ClientLicenseType_Compute;
 
 			s_client = FabricCore::Client(pCallback, nullptr, &options);
+		}
+
+		// Only create the FabricUI glue if not rendering
+		if (isInteractive)
+		{
+			MAXSPLICE_CATCH_BEGIN
+				// Create global singleton so FabricUI can access the client
+				static auto appStates = new FabricUI::Application::FabricApplicationStates( s_client );
+
+				// Initialize the KL extension that houses the counter-part to the C++ CommandManager
+				s_client.loadExtension( "FabricInterfaces", nullptr, false );
+
+				// Initialize the CommandManager to process commands from the UI
+				GetCommandManager();
+
+			MAXSPLICE_CATCH_END
+
 		}
 	}
 	return s_client;
@@ -1354,6 +1389,24 @@ FabricCore::RTVal& GetDrawing()
 			s_drawing = s_drawing.callMethod("OGLInlineDrawing", "getInstance", 0, 0);
 	}
 	return s_drawing;
+}
+
+FabricUI::Commands::CommandManager* GetCommandManager()
+{
+	if (!FabricUI::Commands::CommandManager::isInitalized())
+	{
+		// Create a matching command registry
+		auto *registry = new FabricUI::Commands::KLCommandRegistry();
+		registry->synchronizeKL();
+		
+		auto manager = new FabricUI::Commands::KLCommandManager();
+
+		FabricUI::OptionsEditor::OptionEditorCommandRegistration::RegisterCommands();
+		FabricUI::Dialog::DialogCommandRegistration::RegisterCommands();
+
+		return manager;
+	}
+	return FabricUI::Commands::CommandManager::getCommandManager();
 }
 
 #ifdef _DEBUG

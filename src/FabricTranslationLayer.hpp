@@ -30,6 +30,11 @@ FabricTranslationLayer<TBaseClass, TResultType>::FabricTranslationLayer(BOOL loa
 {
   InstanceCreated( this );
 
+  // Enforce client loading now,
+  // while we know whether or not
+  // we are loading
+  GetClient( true, nullptr, loading );
+
   if (!loading)
     Init();
 }
@@ -57,7 +62,6 @@ bool FabricTranslationLayer<TBaseClass, TResultType>::Init()
 
   // create an empty binding
   FabricCore::DFGBinding binding = GetHost().createBindingToNewGraph();
-	binding.setMetadata("host_app", "3dsMax", false);
   SetBinding( binding );
 
   // given a scene base object or modifier, look for a referencing node via successive 
