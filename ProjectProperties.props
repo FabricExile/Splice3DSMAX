@@ -140,14 +140,20 @@
 
   <ItemDefinitionGroup>
 	<PostBuildEvent>
-	  <Command>CALL "$(ProjectDir)/GenerateMaxLauncher.bat" "$(PackageDir)" "$(MaxVersion)"
+	  <Command>
+CALL "$(ProjectDir)/GenerateMaxLauncher.bat" "$(PackageDir)" "$(MaxVersion)"
+CALL "$(ProjectDir)/GeneratePluginIni.bat" "$(TargetDir)" "$(MaxVersion)"
 MKLINK /H "$(PackageDir)\SetupMenu.ms" "$(ProjectDir)SetupMenu.ms" 
 MKLINK /H "$(PackageDir)WireParameters.ms" "$(ProjectDir)WireParameters.ms"
 xcopy "$(ProjectDir)testingScripts\UnitTest*.ms" "$(PackageDir)samples" /I /Y
-MKDIR "$(PackageDir)plugin"
-MKLINK /H "$(PackageDir)plugin\QtSolutions_MFCMigrationFramework-head.dll" "$(QTWINMIGRATE_DIR)\lib\QtSolutions_MFCMigrationFramework-head.dll"
+
+IF NOT EXIST "$(PackageDir)plugin" ( MKDIR "$(PackageDir)plugin" )
+IF EXIST "$(PackageDir)plugin\$(TargetFileName)" ( DEL "$(PackageDir)plugin\$(TargetFileName)" )
 MKLINK /H "$(PackageDir)plugin\$(TargetFileName)" "$(TargetPath)"
-CALL "$(ProjectDir)/GeneratePluginIni.bat" "$(TargetDir)" "$(MaxVersion)"
+IF EXIST "$(PackageDir)plugin\QtSolutions_MFCMigrationFramework-head.dll" ( DEL "$(PackageDir)plugin\QtSolutions_MFCMigrationFramework-head.dll" )
+MKLINK /H "$(PackageDir)plugin\QtSolutions_MFCMigrationFramework-head.dll" "$(QTWINMIGRATE_DIR)\lib\QtSolutions_MFCMigrationFramework-head.dll"
+IF EXIST "$(PackageDir)plugin\$(TargetName).pdb" ( DEL "$(PackageDir)plugin\$(TargetName).pdb" )
+MKLINK /H "$(PackageDir)plugin\$(TargetName).pdb" "$(TargetDir)\$(TargetName).pdb"
 	  </Command>
 	</PostBuildEvent>
   </ItemDefinitionGroup>

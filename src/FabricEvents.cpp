@@ -267,7 +267,10 @@ public:
 		if (!FabricEvents::s_DrawContext.isValid() || FabricEvents::s_DrawContext.isNullObject())
 		{
 			try {
-				FabricEvents::s_DrawContext = FabricCore::RTVal::Construct(GetClient(), "DrawContext", 0, nullptr);
+				if (GetClient().isValidType("DrawContext"))
+					FabricEvents::s_DrawContext = FabricCore::RTVal::Construct(GetClient(), "DrawContext", 0, nullptr);
+				else
+					return FabricCore::RTVal();
 			}
 			catch (FabricCore::Exception e) {
 				// Empty catch.  This will happen if the user has not loaded InlineDrawing yet
