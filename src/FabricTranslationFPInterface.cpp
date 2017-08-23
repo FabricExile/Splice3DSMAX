@@ -6,7 +6,7 @@
 #include <maxscript\maxwrapper\mxsobjects.h>
 #include "MaxDFGWidget.h"
 #include "DockableWidget.h"
-
+#include "FabricCommandManagerCallback.h"
 #include <qwinwidget.h>
 #include "Fabric3dsmax.h"
 #include <FabricUI/DFG/Commands/DFGCommandRegistration.h>

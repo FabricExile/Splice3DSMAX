@@ -51,11 +51,15 @@
   <ItemGroup>
     <ClCompile Include="src\MaxDFGCmdHandler.cpp" />
     <ClCompile Include="src\MaxDFGWidget.cpp" />
+    <ClCompile Include="src\FabricCommandManagerCallback.cpp" />
     <ClCompile Include="src\DockableWidget.cpp" />
     <ClCompile Include="src\DynamicParamBlocks\DynPBCustAttrClassDesc.cpp" />
     <ClCompile Include="src\DynamicParamBlocks\DynPBUndo.cpp" />
     <ClCompile Include="src\MaxConversionFns.cpp" />
     <ClCompile Include="src\moc_MaxDFGWidget.cpp">
+      <ForcedIncludeFiles>StdAfx.h</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="src\moc_FabricCommandManagerCallback.cpp">
       <ForcedIncludeFiles>StdAfx.h</ForcedIncludeFiles>
     </ClCompile>
     <ClCompile Include="src\MouseCallbacks\FabricCommandMode.cpp" />
@@ -79,6 +83,11 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <CustomBuild Include="src\MaxDFGWidget.h">
+      <Command>$(QT_DIR)/bin/moc -o "%(RelativeDir)moc_%(Filename).cpp" "%(FullPath)"</Command>
+      <Outputs>moc_%(Filename).cpp</Outputs>
+      <TreatOutputAsContent>true</TreatOutputAsContent>
+    </CustomBuild>
+    <CustomBuild Include="src\FabricCommandManagerCallback.h">
       <Command>$(QT_DIR)/bin/moc -o "%(RelativeDir)moc_%(Filename).cpp" "%(FullPath)"</Command>
       <Outputs>moc_%(Filename).cpp</Outputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
