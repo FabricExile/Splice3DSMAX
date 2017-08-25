@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "FabricRestoreObjects.h"
-
+#include <FabricUI/Commands/CommandManager.h>
 
 bool UndoOn()
 {
@@ -29,6 +29,16 @@ CoreHoldActions::CoreHoldActions(const MCHAR* msg)
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////
+FabricHoldActions::FabricHoldActions(const MCHAR* msg) 
+	: HoldActions(msg)
+{
+	if (UndoOn())
+	{
+		theHold.Put(new FabricCommandRestoreObj());
+	}
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 DFGCommandRestoreObj::DFGCommandRestoreObj(int id)
@@ -49,6 +59,26 @@ void DFGCommandRestoreObj::Redo()
 {
 	GetQtUndoStack()->redo();
 }
+
+//////////////////////////////////////////////////////////////////////////
+FabricCommandRestoreObj::FabricCommandRestoreObj()
+{
+}
+
+FabricCommandRestoreObj::~FabricCommandRestoreObj()
+{
+}
+
+void FabricCommandRestoreObj::Restore(int isUndo)
+{
+	FabricUI::Commands::CommandManager::getCommandManager()->undoCommand();
+}
+
+void FabricCommandRestoreObj::Redo()
+{
+	FabricUI::Commands::CommandManager::getCommandManager()->redoCommand();
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 

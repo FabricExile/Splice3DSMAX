@@ -77,10 +77,11 @@ public:
 		fn_dfgDoAddInstBlockPort,
 		fn_dfgDoAddBlock,
 		fn_dfgDoAddBlockPort,
-
+		
 		/// New in 2.6
 		fn_dfgAddNLSPort,
 		fn_dfgReorderNLSPorts,
+		fn_fabricCommand,
 
 		// Max-specific fn's
 		fn_loadFromFile,
@@ -169,6 +170,7 @@ public:
 		// New items Fabric 2.6
 		FN_6(fn_dfgAddNLSPort,			TYPE_TSTR_BV,		DFGAddNLSPort,				TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR, TYPE_TSTR);
 		VFN_3(fn_dfgReorderNLSPorts,						DFGReorderNLSPorts,		TYPE_TSTR,		TYPE_INT_TAB_BR,	TYPE_TSTR);
+		VFN_2(fn_fabricCommand, FabricCommand, TYPE_TSTR, TYPE_TSTR_TAB_BV);
 
 			// Max specific fns
 
@@ -257,6 +259,7 @@ public:
 	// New in 2.6
 	MSTR DFGAddNLSPort(const MSTR& desiredPortName, const MSTR& portSpec, const MSTR& portToConnect, const MSTR& extDep, const MSTR& metaData, const MSTR& execPath);
 	void DFGReorderNLSPorts( const MSTR& itemPath, Tab<int> indices, const MSTR& execPath);
+	void FabricCommand(const MSTR& cmdName, const Tab<TSTR*>& cmdArgs);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Allow introspecting the ports on this graph
@@ -612,6 +615,10 @@ FPInterfaceDesc* GetDescriptor()
 				_M( "itemPath" ), 0, TYPE_TSTR, 
 				_T("indices"), 0, TYPE_INT_TAB_BR,
 				_M("execPath"), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
+
+			FabricTranslationFPInterface::fn_fabricCommand, _T("FabriCommand"), 0, 0, 0, 2,
+				_M("cmdName"), 0, TYPE_TSTR, f_keyArgDefault, EmptyStr(),
+				_M("cmdArgs"), 0, TYPE_TSTR_TAB_BV,
 
 			//////////////////////////////////////////////////////////////////////////
 			// FabricMax custom functions

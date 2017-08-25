@@ -35,6 +35,13 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
+// A specialization automatically adds a FabricCoreRestoreObj to the stack
+class FabricHoldActions : public HoldActions {
+public:
+	FabricHoldActions(const MCHAR* msg);
+};
+
+//////////////////////////////////////////////////////////////////////////
 // The DFG CommandRestoreObj synchronizes max undos with QUndoStack
 // passed to the MaxDFGCmdHandler
 class DFGCommandRestoreObj : public RestoreObj
@@ -58,6 +65,19 @@ class FabricCoreRestoreObj : public RestoreObj
 public:
 	FabricCoreRestoreObj();
 	~FabricCoreRestoreObj();
+
+	virtual void Restore(int isUndo);
+	virtual void Redo();
+};
+
+//////////////////////////////////////////////////////////////////////////
+// The FabricCommandRestoreObj synchronizes max undos with QUndoStack
+// passed to the MaxDFGCmdHandler
+class FabricCommandRestoreObj : public RestoreObj
+{
+public:
+	FabricCommandRestoreObj();
+	~FabricCommandRestoreObj();
 
 	virtual void Restore(int isUndo);
 	virtual void Redo();

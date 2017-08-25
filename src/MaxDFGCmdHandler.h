@@ -299,6 +299,11 @@ virtual void dfgDoRemoveNodes(
     QList<int> indices
     ) override;
 
+  static void fabricCommand(
+    QString cmdName, 
+    QStringList cmdArgs
+    );
+
 };
 
 

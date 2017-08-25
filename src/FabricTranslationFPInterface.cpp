@@ -411,6 +411,16 @@ void FabricTranslationFPInterface::DFGReorderNLSPorts( const MSTR& itemPath, Tab
 	MAXSPLICE_CATCH_END
 }
 
+
+void FabricTranslationFPInterface::FabricCommand(const MSTR& cmdName, const Tab<TSTR*>& cmdArgs)
+{
+	MAXSPLICE_CATCH_BEGIN
+	QStringList cCmdArgs;
+	Convert(cmdArgs, cCmdArgs);
+	return m_fabricCmdHandler.fabricCommand(ToQStr(cmdName), cCmdArgs );
+	MAXSPLICE_CATCH_END
+}
+
 // Allow introspecting the ports on this graph
 int FabricTranslationFPInterface::GetPortCount(const MSTR& execPath)
 {

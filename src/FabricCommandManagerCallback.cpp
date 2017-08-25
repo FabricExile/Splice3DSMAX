@@ -3,6 +3,7 @@
 //
 #include "StdAfx.h"
 
+#include "MaxDFGCmdHandler.h"
 #include <FabricUI/Util/RTValUtil.h>
 #include "FabricCommandManagerCallback.h"
 #include <FabricUI/Commands/CommandHelpers.h>
@@ -14,6 +15,11 @@
 #include <FabricUI/Commands/BaseRTValScriptableCommand.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
 #include <FabricUI/OptionsEditor/Commands/OptionEditorCommandRegistration.h>
+
+// Julien Keep for debugging
+#include <stdlib.h>
+#include <stdio.h>
+#include <iostream>
 
 using namespace FabricCore;
 using namespace FabricUI::Util;
@@ -112,12 +118,12 @@ void FabricCommandManagerCallback::onCommandDone(
 
   if(cmd->canLog())
   {
-    std::stringstream fabricCmd;
-    fabricCmd << "FabricCommand";
-    encodeArg(cmd->getName(), fabricCmd);
+    // std::stringstream fabricCmd;
+    // fabricCmd << "FabricCommand";
+    // encodeArg(cmd->getName(), fabricCmd);
 
     // Fabric command args.
-    BaseScriptableCommand *scriptCmd = qobject_cast<BaseScriptableCommand*>(cmd);
+    /* BaseScriptableCommand *scriptCmd = qobject_cast<BaseScriptableCommand*>(cmd);
 
     if(scriptCmd)
     {
@@ -154,17 +160,20 @@ void FabricCommandManagerCallback::onCommandDone(
           }
         }
       }
-    }
+    }*/
 
     // Indicates that the command has been created already.
     // so we don't re-create it when constructing the maya command.
     m_commandCreatedFromManagerCallback = true;
     m_commandCanUndo = canUndo;
       
-    // MGlobal::executeCommandOnIdle(
-    //   fabricCmd.str().c_str(), 
-    //   true
-    //   );
+    std::cout 
+      << "FabricCommandManagerCallback::onCommandDone " 
+      << cmd->getName().toUtf8().constData()
+      << std::endl;
+
+    QStringList cmdArgs;
+    MaxDFGCmdHandler::fabricCommand(cmd->getName(), cmdArgs);
   }
 
   //FABRIC_MAYA_CATCH_END("FabricCommandManagerCallback::onCommandDone");
@@ -175,25 +184,33 @@ void FabricCommandManagerCallback::init(
 {
   //FABRIC_MAYA_CATCH_BEGIN();
 
-  new FabricUI::Application::FabricApplicationStates(client);
-  
-  KLCommandRegistry *registry = new KLCommandRegistry();
-  registry->synchronizeKL();
-  
-  KLCommandManager *manager = new KLCommandManager();
-  
-  QObject::connect(
-    manager,
-    SIGNAL(commandDone(FabricUI::Commands::BaseCommand*, bool)),
-    this,
-    SLOT(onCommandDone(FabricUI::Commands::BaseCommand*, bool))
-    );
+  if(!CommandManager::isInitalized())
+  {
+    freopen( "C:\\Users\\Julien\\Documents\\Dev\\SceneGraph\\stage\\Windows\\x86_64\\Release\\DCCIntegrations\\Fabric3dsmax2017\\3dsMaxLog.txt", "a", stdout );
+    freopen( "C:\\Users\\Julien\\Documents\\Dev\\SceneGraph\\stage\\Windows\\x86_64\\Release\\DCCIntegrations\\Fabric3dsmax2017\\3dsMaxError.txt", "a", stderr );
+    std::cout << "\n\n----- initializePlugin -----\n\n" << std::endl;
+    // log("[FabricCommandManagerCallback::init] initializePlugin)\n");
 
-  FabricUI::OptionsEditor::OptionEditorCommandRegistration::RegisterCommands();
-  FabricUI::Dialog::DialogCommandRegistration::RegisterCommands();
-  // Support tool commands
-  m_dfgPVToolsNotifierCallBack = new FabricDFGPVToolsNotifierCallBack();
+    new FabricUI::Application::FabricApplicationStates(client);
+    
+    KLCommandRegistry *registry = new KLCommandRegistry();
+    registry->synchronizeKL();
+    
+    KLCommandManager *manager = new KLCommandManager();
+    
+    QObject::connect(
+      manager,
+      SIGNAL(commandDone(FabricUI::Commands::BaseCommand*, bool)),
+      this,
+      SLOT(onCommandDone(FabricUI::Commands::BaseCommand*, bool))
+      );
 
+    FabricUI::OptionsEditor::OptionEditorCommandRegistration::RegisterCommands();
+    FabricUI::Dialog::DialogCommandRegistration::RegisterCommands();
+    
+    // Support tool commands
+    m_dfgPVToolsNotifierCallBack = new FabricDFGPVToolsNotifierCallBack();
+  }
   //FABRIC_MAYA_CATCH_END("FabricCommandManagerCallback::init");
 }
 

@@ -9,8 +9,9 @@
 
 #include <FabricUI\OptionsEditor\Commands\OptionEditorCommandRegistration.h>
 #include <FabricUI\Dialog\DialogCommandRegistration.h>
-
 #include "DockableWidget.h"
+
+#include "FabricCommandManagerCallback.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -1350,9 +1351,6 @@ FabricCore::Client& GetClient( bool doCreate/*=true*/, const char* contexId, boo
 		if (isInteractive)
 		{
 			MAXSPLICE_CATCH_BEGIN
-				// Create global singleton so FabricUI can access the client
-				static auto appStates = new FabricUI::Application::FabricApplicationStates( s_client );
-
 				// Initialize the KL extension that houses the counter-part to the C++ CommandManager
 				s_client.loadExtension( "FabricInterfaces", nullptr, false );
 
@@ -1360,7 +1358,6 @@ FabricCore::Client& GetClient( bool doCreate/*=true*/, const char* contexId, boo
 				GetCommandManager();
 
 			MAXSPLICE_CATCH_END
-
 		}
 	}
 	return s_client;
@@ -1394,18 +1391,7 @@ FabricCore::RTVal& GetDrawing()
 FabricUI::Commands::CommandManager* GetCommandManager()
 {
 	if (!FabricUI::Commands::CommandManager::isInitalized())
-	{
-		// Create a matching command registry
-		auto *registry = new FabricUI::Commands::KLCommandRegistry();
-		registry->synchronizeKL();
-		
-		auto manager = new FabricUI::Commands::KLCommandManager();
-
-		FabricUI::OptionsEditor::OptionEditorCommandRegistration::RegisterCommands();
-		FabricUI::Dialog::DialogCommandRegistration::RegisterCommands();
-
-		return manager;
-	}
+		FabricCommandManagerCallback::GetManagerCallback()->init(s_client);
 	return FabricUI::Commands::CommandManager::getCommandManager();
 }
 
