@@ -12,6 +12,7 @@
 *.suo
 *.user
 Generated.Plugin.Fabric.ini
+src/moc_FabricCommandManagerCallback.cpp
 src/moc_MaxDFGWidget.cpp
 stage/
 Fabric3dsmax.VC.db
