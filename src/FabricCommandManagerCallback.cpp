@@ -137,6 +137,7 @@ void FabricCommandManagerCallback::init(
     FabricUI::OptionsEditor::OptionEditorCommandRegistration::RegisterCommands();
     FabricUI::Dialog::DialogCommandRegistration::RegisterCommands();
   }
+  
   MAXSPLICE_CATCH_END;
 }
 

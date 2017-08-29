@@ -591,6 +591,8 @@ void MaxDFGCmdHandler::fabricCommand(
 	bool doCmd,
 	bool canUndo)
 { 
+  MAXSPLICE_CATCH_BEGIN;
+
 	if(!doCmd)  
 	{
 		// No need to do anything if the user won't see it
@@ -635,5 +637,6 @@ void MaxDFGCmdHandler::fabricCommand(
 		FabricUI::Commands::CommandManager::getCommandManager()->createCommand(
 			cmdName, 
 			cmdArgs);
-}
 
+  MAXSPLICE_CATCH_END;
+}

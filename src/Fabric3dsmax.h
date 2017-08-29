@@ -1,5 +1,7 @@
 #pragma once
 
+#include <FabricUI/Application/FabricException.h>
+
 #ifdef DEBUG
 #define DBGONLYMSG(text, caption) MaxMsgBox(NULL, text, caption, MB_OK)
 #else
@@ -23,7 +25,12 @@
 	catch (FabricCore::Exception e) { \
 		logMessage(e.getDesc_cstr()); \
 		return value; \
-	} 
+	} \
+  catch (FabricUI::Application::FabricException &e) \
+  { \
+  	logMessage(e.what()); \
+    return value; \
+  } 
 
 // When catching from an FPInterface function, the best thing to do
 // is re-throw with Fabric's error code.
@@ -32,7 +39,15 @@
 	catch (FabricCore::Exception e) { \
 		logMessage(e.getDesc_cstr()); \
 		throw UserThrownError(MSTR::FromACP(e.getDesc_cstr()), FALSE); \
-	} 
+	}  \
+  catch (FabricUI::Application::FabricException &e) \
+  { \
+  	logMessage(e.what()); \
+    FabricUI::Application::FabricException::Throw( \
+      "Caught App Exception", \
+      e.what() \
+      ); \
+  } 
 
 #else
 // In debug mode, we do not want exceptions to be caught.  Ever...
