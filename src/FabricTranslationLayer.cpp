@@ -1390,8 +1390,9 @@ FabricCore::RTVal& GetDrawing()
 
 FabricUI::Commands::CommandManager* GetCommandManager()
 {
-	if (!FabricUI::Commands::CommandManager::isInitalized())
+	if(!FabricUI::Commands::CommandManager::isInitalized())
 		FabricCommandManagerCallback::GetManagerCallback()->init(s_client);
+	FabricCommandManagerCallback::GetManagerCallback()->reset();
 	return FabricUI::Commands::CommandManager::getCommandManager();
 }
 
@@ -1432,6 +1433,9 @@ extern void ReleaseAll()
 	DbgAssert(s_nInstances == 0);
 
 	// Assume we have no more need for the undo stack...
+	if(FabricUI::Commands::CommandManager::isInitalized())
+		FabricCommandManagerCallback::GetManagerCallback()->reset();	
+
 	GetQtUndoStack()->clear();
 	if (s_Host.isValid())
 		s_Host.flushUndoRedo();

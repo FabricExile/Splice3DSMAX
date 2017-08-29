@@ -301,9 +301,10 @@ virtual void dfgDoRemoveNodes(
 
   static void fabricCommand(
     QString cmdName, 
-    QStringList cmdArgs
+    QMap<QString, QString> cmdArgs,
+    bool doCmd = true,
+    bool canUndo = true
     );
-
 };
 
 

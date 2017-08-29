@@ -76,6 +76,14 @@ void Convert(const Tab<MSTR*>& from, QStringList& to) {
 	}
 }
 
+void Convert(const Tab<MSTR*>& from, QMap<QString, QString>& to) {
+	for (int i = 0; i < from.Count(); i++) {
+		QString fromQStr = ToQStr(*from[i]);
+		QList<QString> list = fromQStr.split(":");
+		to[list[0]] = list[1];
+	}
+}
+
 void Convert(const Tab<Point2*>& from, QList<QPointF>& to) {
 	to.reserve(from.Count());
 	for (int i = 0; i < from.Count(); i++) {
@@ -411,11 +419,10 @@ void FabricTranslationFPInterface::DFGReorderNLSPorts( const MSTR& itemPath, Tab
 	MAXSPLICE_CATCH_END
 }
 
-
 void FabricTranslationFPInterface::FabricCommand(const MSTR& cmdName, const Tab<TSTR*>& cmdArgs)
 {
 	MAXSPLICE_CATCH_BEGIN
-	QStringList cCmdArgs;
+	QMap<QString, QString> cCmdArgs;
 	Convert(cmdArgs, cCmdArgs);
 	return m_fabricCmdHandler.fabricCommand(ToQStr(cmdName), cCmdArgs );
 	MAXSPLICE_CATCH_END

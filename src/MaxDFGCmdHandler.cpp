@@ -4,6 +4,7 @@
 #include <macrorec.h>
 #include <QString>
 #include <iostream>
+#include <FabricUI/Commands/KLCommandManager.h>
 
 //////////////////////////////////////////////////////////////////////////
 // defines
@@ -134,7 +135,7 @@ MSTR ToMSTR(const nothing& v) {
 #define TO_MCHAR(x) ToMSTR(x).data()
 
 template<typename T1, typename T2, typename T3, typename T4>
-void doEmit(const MCHAR* fn, const T1& t1, const T2& t2, const T3& t3, const T4& t4, QString const& execPath="")
+void doEmit(const MCHAR* fn, const T1& t1, const T2& t2, const T3& t3, const T4& t4, QString & execPath)
 {
 	// No need to do anything if the user won't see it
 	if (!macroRecorder->Enabled())
@@ -146,7 +147,6 @@ void doEmit(const MCHAR* fn, const T1& t1, const T2& t2, const T3& t3, const T4&
 	macroRecorder->EmitScript();
 }
 
-#define EMIT0(fn, t1, t2) doEmit(fn, t1, t2, nothing(), nothing())
 #define EMIT1(fn, t1, path) doEmit(fn, t1, nothing(), nothing(), nothing(), execPath)
 #define EMIT2(fn, t1, t2, path) doEmit(fn, t1, t2, nothing(), nothing(), execPath)
 #define EMIT3(fn, t1, t2, t3, path) doEmit(fn, t1, t2, t3, nothing(), execPath)
@@ -585,18 +585,55 @@ void MaxDFGCmdHandler::dfgDoReorderNLSPorts(FabricCore::DFGBinding const &bindin
 	return __super::dfgDoReorderNLSPorts(binding, execPath, exec, itemPath, indices);
 }
 
-void MaxDFGCmdHandler::fabricCommand(QString cmdName, QStringList cmdArgs)
-{
-	//EMIT0(_M("FabricCommand"), cmdName, cmdArgs);
-	MSTR r;
-	r.printf(_M("%s"), cmdName.data());
+void MaxDFGCmdHandler::fabricCommand(
+	QString cmdName,     
+	QMap<QString, QString> cmdArgs, 
+	bool doCmd,
+	bool canUndo)
+{ 
+	if(!doCmd)  
+	{
+		// No need to do anything if the user won't see it
+		if (macroRecorder->Enabled())
+	 	{
+			QString cmdQStr = "FabricCommand " + cmdName;
+			
+			if(cmdArgs.size() > 0)
+			{
+				cmdQStr += " #(";
+				int count = 0;
+				
+				QMap<QString, QString>::iterator i;
+				for (i = cmdArgs.begin(); i != cmdArgs.end(); ++i)
+				{
+					cmdQStr += "'" + i.key() + ":" + i.value() + "'";
+					if(count < (cmdArgs.size() -1))
+					{
+						count ++;
+						cmdQStr += ",";
+					}
+				}
 
-	FabricHoldActions hold(r);
-	std::cout 
-    << "MaxDFGCmdHandler::fabricCommand " 
-    << cmdName.toUtf8().constData()
-    << std::endl;
-	//__super::dfgDoRemoveNodes(binding, execPath, exec, nodeNames);
-	//m_pTranslationLayer->InvalidateAll();
+				cmdQStr += ")";
+			}
+ 
+			MSTR cmd;
+			cmd.printf(_M("$.%s"), cmdQStr.data());
+	 		macroRecorder->ScriptString(cmd.data());
+			macroRecorder->EmitScript();
+	 	}
+
+		if(canUndo)
+		{
+			MSTR r;
+			r.printf(_M("%s"), cmdName.data());
+			FabricHoldActions hold(r);
+		}
+	}
+
+	else
+		FabricUI::Commands::CommandManager::getCommandManager()->createCommand(
+			cmdName, 
+			cmdArgs);
 }
 

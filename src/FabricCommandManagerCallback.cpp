@@ -15,10 +15,12 @@
 #include <FabricUI/Application/FabricApplicationStates.h>
 #include <FabricUI/OptionsEditor/Commands/OptionEditorCommandRegistration.h>
 
-// Julien Keep for debugging
-#include <stdlib.h>
-#include <stdio.h>
-#include <iostream>
+// Uncomment the following to have stdout and stderr printed into files (else these will not
+// be seen in the Maya console)
+//
+// #include <stdlib.h>
+// #include <stdio.h>
+// #include <iostream>
 
 using namespace FabricCore;
 using namespace FabricUI::Util;
@@ -29,7 +31,6 @@ FabricCommandManagerCallback* FabricCommandManagerCallback::s_cmdManagerMayaCall
 
 FabricCommandManagerCallback::FabricCommandManagerCallback()
   : QObject()  
-  , m_commandCreatedFromManagerCallback(false)
 {
 }
 
@@ -64,62 +65,42 @@ void FabricCommandManagerCallback::onCommandDone(
 
   if(cmd->canLog())
   {
-    // std::stringstream fabricCmd;
-    // fabricCmd << "FabricCommand";
-    // encodeArg(cmd->getName(), fabricCmd);
+    BaseScriptableCommand *scriptCmd = qobject_cast<BaseScriptableCommand*>(cmd);
 
-    // Fabric command args.
-    /* BaseScriptableCommand *scriptCmd = qobject_cast<BaseScriptableCommand*>(cmd);
+    QMap<QString, QString> cmdArgs;
 
     if(scriptCmd)
     {
       BaseRTValScriptableCommand *rtValScriptCmd = qobject_cast<BaseRTValScriptableCommand*>(cmd);
-        
+      
       foreach(QString key, scriptCmd->getArgKeys())
       {
         if(!scriptCmd->hasArgFlag(key, CommandArgFlags::DONT_LOG_ARG))
-        {
+        {          
           if( rtValScriptCmd ) {
             QString path = rtValScriptCmd->getRTValArgPath( key ).toUtf8().constData();
-            if( !path.isEmpty() ) {
-              encodeArg( key, fabricCmd );
-              encodeArg( CommandHelpers::encodeJSON( CommandHelpers::castToPathValuePath( path ) ),
-                          fabricCmd );
-            } else {
+            
+            if( !path.isEmpty() ) 
+              cmdArgs[key] = CommandHelpers::encodeJSON( CommandHelpers::castToPathValuePath( path ) );
+            
+            else
+            {
               RTVal val = rtValScriptCmd->getRTValArgValue( key );
-              // Don't encode if null
-              if( val.isValid() ) {
-                encodeArg( key, fabricCmd );
-                encodeArg(
-                  CommandHelpers::encodeJSON( RTValUtil::toJSON( val ) ),
-                  fabricCmd
-                );
-              }
+              cmdArgs[key] = CommandHelpers::encodeJSON( RTValUtil::toJSON( val ) );
             }
           }
-          else {
-            encodeArg( key, fabricCmd );
-            encodeArg(
-              scriptCmd->getArg( key ),
-              fabricCmd
-            );
-          }
+
+          else
+            cmdArgs[key] = scriptCmd->getArg(key);
         }
       }
-    }*/
-
-    // Indicates that the command has been created already.
-    // so we don't re-create it when constructing the maya command.
-    m_commandCreatedFromManagerCallback = true;
-    m_commandCanUndo = canUndo;
-      
-    std::cout 
-      << "FabricCommandManagerCallback::onCommandDone " 
-      << cmd->getName().toUtf8().constData()
-      << std::endl;
-
-    QStringList cmdArgs;
-    MaxDFGCmdHandler::fabricCommand(cmd->getName(), cmdArgs);
+    }
+ 
+    MaxDFGCmdHandler::fabricCommand(
+      cmd->getName(), 
+      cmdArgs,
+      false, 
+      canUndo);
   }
 
   MAXSPLICE_CATCH_END;
@@ -132,11 +113,13 @@ void FabricCommandManagerCallback::init(
 
   if(!CommandManager::isInitalized())
   {
-    freopen( "C:\\Users\\Julien\\Documents\\Dev\\SceneGraph\\stage\\Windows\\x86_64\\Release\\DCCIntegrations\\Fabric3dsmax2017\\3dsMaxLog.txt", "a", stdout );
-    freopen( "C:\\Users\\Julien\\Documents\\Dev\\SceneGraph\\stage\\Windows\\x86_64\\Release\\DCCIntegrations\\Fabric3dsmax2017\\3dsMaxError.txt", "a", stderr );
-    std::cout << "\n\n----- initializePlugin -----\n\n" << std::endl;
-    // log("[FabricCommandManagerCallback::init] initializePlugin)\n");
-
+    // Uncomment the following to have stdout and stderr printed into files (else these will not
+    // be seen in the Maya console)
+    //
+    // freopen( "C:\\Users\\Julien\\Documents\\Dev\\SceneGraph\\stage\\Windows\\x86_64\\Release\\DCCIntegrations\\Fabric3dsmax2017\\3dsMaxLog.txt", "a", stdout );
+    // freopen( "C:\\Users\\Julien\\Documents\\Dev\\SceneGraph\\stage\\Windows\\x86_64\\Release\\DCCIntegrations\\Fabric3dsmax2017\\3dsMaxError.txt", "a", stderr );
+    // std::cout << "\n\n----- initializePlugin -----\n\n" << std::endl;
+ 
     new FabricUI::Application::FabricApplicationStates(client);
     
     KLCommandRegistry *registry = new KLCommandRegistry();
@@ -192,20 +175,4 @@ void FabricCommandManagerCallback::reset()
   registry->synchronizeKL();
   
   MAXSPLICE_CATCH_END;
-}
-
-void FabricCommandManagerCallback::commandCreatedFromManagerCallback(
-  bool createdFromManagerCallback)
-{
-  m_commandCreatedFromManagerCallback = createdFromManagerCallback;
-}
-
-bool FabricCommandManagerCallback::isCommandCreatedFromManagerCallback()
-{
-  return m_commandCreatedFromManagerCallback;
-}
-
-bool FabricCommandManagerCallback::isCommandCanUndo()
-{
-  return m_commandCanUndo;
 }
