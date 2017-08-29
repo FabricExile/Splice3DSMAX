@@ -7,32 +7,7 @@
 #include <QObject>
 #include <FabricCore.h>
 #include <FabricUI/Commands/BaseCommand.h>
-#include <FabricUI/DFG/Tools/DFGPVToolsNotifier.h>
-
-class FabricDFGPVToolsNotifierCallBack : public QObject
-{
-  Q_OBJECT
-  
-  public:
-    FabricDFGPVToolsNotifierCallBack();
-      
-    virtual ~FabricDFGPVToolsNotifierCallBack();
-
-    void clear();
-
-  private slots:
-    void onToolUpdated(
-      QString const& toolPath
-      );
-
-    void onToolRegistered(
-      QString const& toolPath
-      );
-
-  private:
-    FabricUI::DFG::DFGPVToolsNotifierRegistry *m_toolsDFGPVNotifierRegistry;
-};
-
+ 
 class FabricCommandManagerCallback : public QObject
 {
   /**
@@ -72,10 +47,7 @@ class FabricCommandManagerCallback : public QObject
 
     /// To know if the command is created from maya or by the manager
     bool isCommandCanUndo();
-
-    /// Tools
-    FabricDFGPVToolsNotifierCallBack *m_dfgPVToolsNotifierCallBack;
-  
+ 
   private slots:
     /// Called when a command has been pushed to the manager.
     /// \param cmd The command that has been pushed.
