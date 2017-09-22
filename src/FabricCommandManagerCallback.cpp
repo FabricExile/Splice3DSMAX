@@ -10,6 +10,7 @@
 #include <FabricUI/Commands/KLCommandManager.h>
 #include <FabricUI/Commands/KLCommandRegistry.h>
 #include <FabricUI/Commands/BaseScriptableCommand.h>
+#include <FabricUI/Commands/CommandRegistration.h>
 #include <FabricUI/Dialog/DialogCommandRegistration.h>
 #include <FabricUI/Commands/BaseRTValScriptableCommand.h>
 #include <FabricUI/Application/FabricApplicationStates.h>
@@ -123,10 +124,12 @@ void FabricCommandManagerCallback::init(
     new FabricUI::Application::FabricApplicationStates(client);
     
     KLCommandRegistry *registry = new KLCommandRegistry();
+    CommandRegistry::setCommandRegistrySingleton(registry);
     registry->synchronizeKL();
-    
+
     KLCommandManager *manager = new KLCommandManager();
-    
+    CommandManager::setCommandManagerSingleton(manager);
+
     QObject::connect(
       manager,
       SIGNAL(commandDone(FabricUI::Commands::BaseCommand*, bool)),
@@ -134,6 +137,7 @@ void FabricCommandManagerCallback::init(
       SLOT(onCommandDone(FabricUI::Commands::BaseCommand*, bool))
       );
 
+    FabricUI::Commands::CommandRegistration::RegisterCommands();
     FabricUI::OptionsEditor::OptionEditorCommandRegistration::RegisterCommands();
     FabricUI::Dialog::DialogCommandRegistration::RegisterCommands();
   }
