@@ -1,5 +1,10 @@
 
-include "WireParameters.ms"
+( -- Wrapped to make scope non-global 
+  dNetDir = dotNetClass "System.IO.Directory" 
+  dNetPath = dotNetClass "System.IO.Path" 
+  parentDir = ( dNetDir.getParent ( getThisScriptFilename() ) ).fullName 
+  fileIn ( dNetPath.combine parentDir "WireParameters.ms" ) 
+) 
 
 -- macro script to toggle Fabric rendering
 macroScript FabricRendering 
