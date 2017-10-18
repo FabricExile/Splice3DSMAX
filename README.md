@@ -14,47 +14,15 @@ Supported platforms
 
 Windows
 
-Building
-========
+Building and Dependencies
+========================
 
-A scons (http://www.scons.org/) build script is provided. Fabric Fabric for 3DSMAX depends on
-* A dynamic build of Fabric Core (matching the latest version).
-* The FabricAPI repository checked out one level above (http://github.com/fabric-engine/FabricAPI)
+A visual studio project is provided, which expects some environment variables to be set such as
 
-Fabric Fabric for 3ds Max requires a certain folder structure to build properly. You will need to have the FabricAPI cloned as well on your drive, as such:
-
-    FabricAPI
-    Applications/Fabric3DSMAX
-
-You can use the bash script below to clone the repositories accordingly:
-
-    git clone git@github.com:fabric-engine/FabricAPI.git
-    mkdir Applications
-    cd Applications
-    git clone git@github.com:fabric-engine/Fabric3DSMAX.git
-    cd Fabric3DSMAX
-    scons
-
-To inform scons where to find the Fabric Core includes as well as the thirdparty libraries, you need to set the following environment variables:
-
-* FABRIC_BUILD_OS: Should be the type of OS you are building for (Windows, Darwin, Linux)
-* FABRIC_BUILD_ARCH: The architecture you are building for (x86, x86_64)
-* FABRIC_BUILD_TYPE: The optimization type (Release, Debug)
-* FABRIC_SPLICE_VERSION: Refers to the version you want to build. Typically the name of the branch (for example 1.13.0)
-* FABRIC_CAPI_DIR: Should point to Fabric Engine's Core folder.
-* 3DSMAX_INCLUDE_DIR: The include folder of the Autodesk 3DSMAX installation. (for example: C:\Program Files\Autodesk\3DSMAX2014\include)
-* 3DSMAX_LIB_DIR: The library folder of the Autodesk 3DSMAX installation. (for example: C:\Program Files\Autodesk\3DSMAX2014\lib)
-* 3DSMAX_VERSION: The 3DSMAX version to use including eventual SP suffix. (for example: 2014SP2)
-
-The temporary files will be built into the *.build* folder, while the structured output files will be placed in the *.stage* folder.
-
-To perform a build you can just run
-
-    scons all -j8
-
-To clean the build you can run
-
-    scons clean
+QTWINMIGRATE_DIR pointing to a build of the qtwinmigrate project https://github.com/qtproject/qt-solutions/tree/master/qtwinmigrate
+MaxSDKPath pointing to the Max SDK
+QT_DIR pointing to a valid QT 4.8.7 installation
+FABRIC_DIR pointing to a supported version of Fabric Engine
 
 License
 ==========
